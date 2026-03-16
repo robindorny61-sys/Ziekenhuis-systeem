@@ -10,16 +10,37 @@
 
 <div class="login-container">
 
-<h1>Inlog verpleeging</h1>
+<h1>Inlog Verpleging</h1>
 
-<input type="text" placeholder="Gebruikersnaam">
-<input type="password" placeholder="Wachtwoord">
+<input type="text" id="user" placeholder="Gebruikersnaam">
+<input type="password" id="pass" placeholder="Wachtwoord">
 
-<a href="dashboard.html">
-<button class="login-btn">Inloggen</button>
-</a>
+<button class="login-btn" onclick="login()">Inloggen</button>
 
 </div>
+
+<script>
+
+function login(){
+
+var username = document.getElementById("user").value;
+var password = document.getElementById("pass").value;
+
+if(username === "dokter" && password === "1234"){
+
+window.location.href = "dashboard.html";
+
+}
+
+else{
+
+alert("Foute login");
+
+}
+
+}
+
+</script>
 
 </body>
 </html>
