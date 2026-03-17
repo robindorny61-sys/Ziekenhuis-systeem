@@ -172,3 +172,17 @@ document.querySelectorAll("input").forEach(i => i.value="");
 /* ================= START ================= */
 
 updateDashboard();
+/* ================= LOGIN CHECK ================= */
+
+let currentUser = localStorage.getItem("currentUser");
+
+if(!currentUser){
+window.location.href = "index.html";
+}
+
+/* ================= LOGOUT ================= */
+
+function logout(){
+localStorage.removeItem("currentUser");
+window.location.href = "index.html";
+}
