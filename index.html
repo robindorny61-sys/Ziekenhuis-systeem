@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<title>Dokter Login</title>
+<title>Login</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -10,27 +10,25 @@
 
 <div class="login-container">
 
-<h1>Inloggen Verpleging</h1>
+<h1>🔐 Login</h1>
 
-<input type="text" id="user" placeholder="Gebruikersnaam">
-<input type="password" id="pass" placeholder="Wachtwoord">
+<input id="loginUser" placeholder="Gebruikersnaam">
+<input id="loginPass" type="password" placeholder="Wachtwoord">
 
-<button onclick="login()">Inloggen</button>
+<button onclick="login()">Login</button>
+
+<hr>
+
+<h3>Account maken</h3>
+
+<input id="regUser" placeholder="Nieuwe gebruiker">
+<input id="regPass" type="password" placeholder="Nieuw wachtwoord">
+
+<button onclick="register()">Registreer</button>
 
 </div>
 
-<script>
-function login(){
-let user = document.getElementById("user").value;
-let pass = document.getElementById("pass").value;
-
-if(user === "dokter" && pass === "1234"){
-window.location.href = "dashboard.html";
-}else{
-alert("Foute login");
-}
-}
-</script>
+<script src="js/auth.js"></script>
 
 </body>
 </html>
