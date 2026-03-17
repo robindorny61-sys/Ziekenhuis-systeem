@@ -1,90 +1,141 @@
-let pCount = 0;
-let sCount = 0;
-let aCount = 0;
+/* ================= TELLERS ================= */
 
-/* navigatie */
+let patientCount = 0;
+let spoedCount = 0;
+let afspraakCount = 0;
+
+/* ================= NAVIGATIE ================= */
+
 function show(id){
-document.querySelectorAll(".section").forEach(s=>s.style.display="none");
-document.getElementById(id).style.display="block";
+document.querySelectorAll(".section").forEach(section => {
+section.style.display = "none";
+});
+
+document.getElementById(id).style.display = "block";
 }
 
-/* PATIENT */
+/* ================= PATIENT TOEVOEGEN ================= */
+
 function addPatient(){
 
-let naam = naamInput("naam");
-let leeftijd = naamInput("leeftijd");
-let aandoening = naamInput("aandoening");
-let medicatie = naamInput("medicatie");
-let verzekering = naamInput("verzekering");
+let naam = document.getElementById("naam").value.trim();
+let leeftijd = document.getElementById("leeftijd").value.trim();
+let aandoening = document.getElementById("aandoening").value.trim();
+let medicatie = document.getElementById("medicatie").value.trim();
+let verzekering = document.getElementById("verzekering").value.trim();
 
-if(!naam) return alert("Naam nodig");
+/* CHECK */
+if(naam === "" || leeftijd === ""){
+alert("Vul naam en leeftijd in!");
+return;
+}
 
 let table = document.getElementById("table");
+
+if(!table){
+alert("Ga naar 'Patiënten' om te zien!");
+return;
+}
+
+/* NIEUWE RIJ */
 let row = table.insertRow();
 
-row.insertCell(0).innerHTML = naam;
-row.insertCell(1).innerHTML = leeftijd;
-row.insertCell(2).innerHTML = aandoening;
-row.insertCell(3).innerHTML = medicatie;
-row.insertCell(4).innerHTML = verzekering;
+/* DATA */
+row.insertCell(0).innerText = naam;
+row.insertCell(1).innerText = leeftijd;
+row.insertCell(2).innerText = aandoening;
+row.insertCell(3).innerText = medicatie;
+row.insertCell(4).innerText = verzekering;
 
-/* SPOED */
+/* SPOED KNOP */
 let spoedBtn = document.createElement("button");
-spoedBtn.innerHTML="🚨";
+spoedBtn.innerText = "🚨";
 
-spoedBtn.onclick=function(){
-spoedBtn.style.background="red";
-sCount++;
-document.getElementById("sCount").innerText=sCount;
+spoedBtn.onclick = function(){
+
+if(spoedBtn.innerText === "🚨"){
+spoedBtn.innerText = "SPOED";
+spoedBtn.style.background = "red";
+
+spoedCount++;
+}else{
+spoedBtn.innerText = "🚨";
+spoedBtn.style.background = "";
+
+spoedCount--;
 }
 
+document.getElementById("sCount").innerText = spoedCount;
+
+};
+
+/* TOEVOEGEN */
 row.insertCell(5).appendChild(spoedBtn);
 
-/* teller */
-pCount++;
-document.getElementById("pCount").innerText=pCount;
+/* TELLER */
+patientCount++;
+document.getElementById("pCount").innerText = patientCount;
 
-/* reset */
-clearInputs();
+/* RESET */
+document.getElementById("naam").value = "";
+document.getElementById("leeftijd").value = "";
+document.getElementById("aandoening").value = "";
+document.getElementById("medicatie").value = "";
+document.getElementById("verzekering").value = "";
+
+alert("Patiënt opgeslagen!");
 
 }
 
-/* AFSPRAKEN */
+/* ================= AFSPRAKEN ================= */
+
 function addAfspraak(){
 
-let naam = naamInput("aNaam");
+let naam = document.getElementById("aNaam").value.trim();
 let type = document.getElementById("aType").value;
-let tijd = naamInput("aTijd");
+let tijd = document.getElementById("aTijd").value.trim();
+
+if(naam === "" || tijd === ""){
+alert("Vul alles in!");
+return;
+}
 
 let li = document.createElement("li");
-li.innerHTML = tijd+" - "+naam+" ("+type+")";
+li.innerText = tijd + " - " + naam + " (" + type + ")";
+
+/* kleur bij dringend */
+if(type === "Dringend"){
+li.style.color = "red";
+}
 
 document.getElementById("aList").appendChild(li);
 
-aCount++;
-document.getElementById("aCount").innerText=aCount;
+/* teller */
+afspraakCount++;
+document.getElementById("aCount").innerText = afspraakCount;
+
+/* reset */
+document.getElementById("aNaam").value = "";
+document.getElementById("aTijd").value = "";
 
 }
 
-/* NOTITIES */
+/* ================= NOTITIES ================= */
+
 function saveNote(){
 
-let text = document.getElementById("note").value;
+let text = document.getElementById("note").value.trim();
+
+if(text === ""){
+alert("Schrijf iets!");
+return;
+}
 
 let li = document.createElement("li");
 li.innerText = text;
 
 document.getElementById("noteList").appendChild(li);
 
-document.getElementById("note").value="";
+document.getElementById("note").value = "";
 
-}
-
-/* helpers */
-function naamInput(id){
-return document.getElementById(id).value;
-}
-
-function clearInputs(){
-document.querySelectorAll("input").forEach(i=>i.value="");
 }
