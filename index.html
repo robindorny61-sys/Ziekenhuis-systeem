@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<title>Dokter Portaal</title>
+<title>Dokter Login</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -10,36 +10,26 @@
 
 <div class="login-container">
 
-<h1>Inlog Verpleging</h1>
+<h1>Inloggen Verpleging</h1>
 
 <input type="text" id="user" placeholder="Gebruikersnaam">
 <input type="password" id="pass" placeholder="Wachtwoord">
 
-<button class="login-btn" onclick="login()">Inloggen</button>
+<button onclick="login()">Inloggen</button>
 
 </div>
 
 <script>
-
 function login(){
+let user = document.getElementById("user").value;
+let pass = document.getElementById("pass").value;
 
-var username = document.getElementById("user").value;
-var password = document.getElementById("pass").value;
-
-if(username === "dokter" && password === "1234"){
-
+if(user === "dokter" && pass === "1234"){
 window.location.href = "dashboard.html";
-
-}
-
-else{
-
+}else{
 alert("Foute login");
-
 }
-
 }
-
 </script>
 
 </body>
