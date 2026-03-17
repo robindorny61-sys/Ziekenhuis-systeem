@@ -1,106 +1,131 @@
-import { db } from "./firebase.js";
-import {
-collection, addDoc, getDocs, deleteDoc, doc, updateDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+/* LOGIN */
 
-/* NAV */
-window.show = (id)=>{
-document.querySelectorAll(".section").forEach(s=>s.style.display="none");
-document.getElementById(id).style.display="block";
-if(id==="patients") load();
+function login(){
+let user = document.getElementById("user").value;
+let pass = document.getElementById("pass").value;
+
+if(user === "dokter" && pass === "1234"){
+window.location.href = "dashboard.html";
+}else{
+alert("Foute login");
 }
-
-/* ADD */
-window.addPatient = async ()=>{
-await addDoc(collection(db,"patients"),{
-naam:naam.value,
-leeftijd:leeftijd.value,
-aandoening:aandoening.value,
-medicatie:medicatie.value,
-verzekering:verzekering.value,
-spoed:false
-});
-alert("Opgeslagen");
-}
-
-/* LOAD */
-async function load(){
-
-let table = document.getElementById("table");
-
-table.innerHTML=`
-<tr>
-<th>Naam</th><th>Leeftijd</th><th>Aandoening</th>
-<th>Medicatie</th><th>Verzekering</th><th>Spoed</th><th>Acties</th>
-</tr>
-`;
-
-let data = await getDocs(collection(db,"patients"));
-
-let spoedCount=0;
-let totaal=0;
-
-data.forEach(d=>{
-
-let p=d.data();
-let row=table.insertRow();
-
-row.insertCell(0).innerText=p.naam;
-row.insertCell(1).innerText=p.leeftijd;
-row.insertCell(2).innerText=p.aandoening;
-row.insertCell(3).innerText=p.medicatie;
-row.insertCell(4).innerText=p.verzekering;
-
-/* SPOED */
-let btn=document.createElement("button");
-btn.innerText=p.spoed?"SPOED":"🚨";
-
-if(p.spoed){btn.style.background="red";spoedCount++;}
-
-btn.onclick=async ()=>{
-await updateDoc(doc(db,"patients",d.id),{
-spoed:!p.spoed
-});
-load();
-};
-
-row.insertCell(5).appendChild(btn);
-
-/* DELETE */
-let del=document.createElement("button");
-del.innerText="❌";
-del.onclick=async ()=>{
-await deleteDoc(doc(db,"patients",d.id));
-load();
-};
-
-row.insertCell(6).appendChild(del);
-
-totaal++;
-
-});
-
-pCount.innerText=totaal;
-sCount.innerText=spoedCount;
-
-}
-
-/* SEARCH */
-window.search=()=>{
-let val=search.value.toLowerCase();
-document.querySelectorAll("#table tr").forEach((r,i)=>{
-if(i===0)return;
-r.style.display=r.innerText.toLowerCase().includes(val)?"":"none";
-});
-}
-
-/* AFSPRAKEN */
-window.addAppointment=()=>{
-let li=document.createElement("li");
-li.innerText=aTijd.value+" - "+aNaam.value+" ("+aType.value+")";
-if(aType.value==="Dringend") li.style.color="red";
-aList.appendChild(li);
 }
 
 /* LOGOUT */
-window.logout=()=>location.href="index.html";
+
+function logout(){
+window.location.href = "index.html";
+}
+
+/* NAV */
+
+function show(id){
+document.querySelectorAll(".section").forEach(s=>s.style.display="none");
+document.getElementById(id).style.display="block";
+}
+
+/* DATA */
+
+let patients = JSON.parse(localStorage.getItem("patients")) || [];
+
+/* ADD PATIENT */
+
+function addPatient(){
+
+let naam = naamInput("naam");
+let leeftijd = naamInput("leeftijd");
+let aandoening = naamInput("aandoening");
+let medicatie = naamInput("medicatie");
+
+if(!naam) return alert("Vul naam in");
+
+patients.push({
+naam,
+leeftijd,
+aandoening,
+medicatie,
+spoed:false
+});
+
+save();
+render();
+}
+
+/* SAVE */
+
+function save(){
+localStorage.setItem("patients", JSON.stringify(patients));
+}
+
+/* RENDER */
+
+function render(){
+
+let table = document.getElementById("table");
+
+if(!table) return;
+
+table.innerHTML = `
+<tr>
+<th>Naam</th><th>Leeftijd</th><th>Aandoening</th><th>Medicatie</th><th>Spoed</th>
+</tr>
+`;
+
+let spoed = 0;
+
+patients.forEach((p,i)=>{
+
+let row = table.insertRow();
+
+row.insertCell(0).innerText = p.naam;
+row.insertCell(1).innerText = p.leeftijd;
+row.insertCell(2).innerText = p.aandoening;
+row.insertCell(3).innerText = p.medicatie;
+
+let btn = document.createElement("button");
+btn.innerText = p.spoed ? "SPOED" : "🚨";
+
+btn.onclick = function(){
+p.spoed = !p.spoed;
+save();
+render();
+};
+
+if(p.spoed) spoed++;
+
+row.insertCell(4).appendChild(btn);
+
+});
+
+document.getElementById("count").innerText = patients.length;
+document.getElementById("spoedCount").innerText = spoed;
+
+}
+
+/* AFSPRAKEN */
+
+function addAfspraak(){
+
+let naam = naamInput("aNaam");
+let tijd = naamInput("aTijd");
+let type = document.getElementById("aType").value;
+
+let li = document.createElement("li");
+
+li.innerText = tijd + " - " + naam + " (" + type + ")";
+
+if(type === "Dringend") li.style.color = "red";
+
+document.getElementById("aList").appendChild(li);
+
+}
+
+/* HELPER */
+
+function naamInput(id){
+return document.getElementById(id).value;
+}
+
+/* START */
+
+render();
