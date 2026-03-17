@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard</title>
+<title>Ziekenhuis Dashboard</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -11,36 +11,66 @@
 <div class="sidebar">
 <h2>🏥 Ziekenhuis</h2>
 
-<a href="dashboard.html">Dashboard</a>
-<a href="paginas/patienten.html">Patiënten</a>
-<a href="paginas/afspraken.html">Afspraken</a>
+<a onclick="showSection('dashboard')">Dashboard</a>
+<a onclick="showSection('toevoegen')">Nieuwe patiënt</a>
+<a onclick="showSection('lijst')">Overzicht</a>
 
 </div>
 
 <div class="content">
 
+<!-- DASHBOARD -->
+<div id="dashboard" class="section">
 <h1>Dashboard</h1>
 
 <div class="cards">
-
-<div class="card">
-<h3>Patiënten</h3>
-<p>120</p>
-</div>
-
-<div class="card">
-<h3>Afspraken</h3>
-<p>8 vandaag</p>
-</div>
-
-<div class="card">
-<h3>Spoed</h3>
-<p>2</p>
+<div class="card"><h3>Patiënten</h3><p id="count">0</p></div>
+<div class="card"><h3>Spoed</h3><p id="spoedCount">0</p></div>
 </div>
 
 </div>
 
+<!-- PATIENT TOEVOEGEN -->
+<div id="toevoegen" class="section" style="display:none;">
+<h1>Nieuwe patiënt</h1>
+
+<input id="naam" placeholder="Naam"><br><br>
+<input id="leeftijd" type="number" placeholder="Leeftijd"><br><br>
+<input id="aandoening" placeholder="Aandoening"><br><br>
+<input id="medicatie" placeholder="Medicatie"><br><br>
+
+<select id="type">
+<option value="Normaal">Normale afspraak</option>
+<option value="Dringend">Dringend</option>
+</select><br><br>
+
+<input id="verzekering" placeholder="Verzekering"><br><br>
+
+<button onclick="addPatient()">Toevoegen</button>
+
 </div>
+
+<!-- OVERZICHT -->
+<div id="lijst" class="section" style="display:none;">
+<h1>Patiënten overzicht</h1>
+
+<table id="table">
+<tr>
+<th>Naam</th>
+<th>Leeftijd</th>
+<th>Aandoening</th>
+<th>Medicatie</th>
+<th>Type</th>
+<th>Verzekering</th>
+<th>Spoed</th>
+</tr>
+</table>
+
+</div>
+
+</div>
+
+<script src="js/app.js"></script>
 
 </body>
 </html>
