@@ -1,24 +1,23 @@
-let totaal = 0;
-let spoed = 0;
+let pCount = 0;
+let sCount = 0;
+let aCount = 0;
 
-function showSection(id){
-document.querySelectorAll(".section").forEach(sec => sec.style.display="none");
+/* navigatie */
+function show(id){
+document.querySelectorAll(".section").forEach(s=>s.style.display="none");
 document.getElementById(id).style.display="block";
 }
 
+/* PATIENT */
 function addPatient(){
 
-let naam = document.getElementById("naam").value;
-let leeftijd = document.getElementById("leeftijd").value;
-let aandoening = document.getElementById("aandoening").value;
-let medicatie = document.getElementById("medicatie").value;
-let type = document.getElementById("type").value;
-let verzekering = document.getElementById("verzekering").value;
+let naam = naamInput("naam");
+let leeftijd = naamInput("leeftijd");
+let aandoening = naamInput("aandoening");
+let medicatie = naamInput("medicatie");
+let verzekering = naamInput("verzekering");
 
-if(!naam || !leeftijd){
-alert("Vul alles in");
-return;
-}
+if(!naam) return alert("Naam nodig");
 
 let table = document.getElementById("table");
 let row = table.insertRow();
@@ -27,33 +26,65 @@ row.insertCell(0).innerHTML = naam;
 row.insertCell(1).innerHTML = leeftijd;
 row.insertCell(2).innerHTML = aandoening;
 row.insertCell(3).innerHTML = medicatie;
-row.insertCell(4).innerHTML = type;
-row.insertCell(5).innerHTML = verzekering;
+row.insertCell(4).innerHTML = verzekering;
 
-/* SPOED KNOP */
-let spoedCell = row.insertCell(6);
+/* SPOED */
+let spoedBtn = document.createElement("button");
+spoedBtn.innerHTML="🚨";
 
-let btn = document.createElement("button");
-btn.innerHTML = "🚨 Spoed";
-
-btn.onclick = function(){
-btn.style.background = "red";
-btn.innerHTML = "SPOED!";
-spoed++;
-document.getElementById("spoedCount").innerText = spoed;
+spoedBtn.onclick=function(){
+spoedBtn.style.background="red";
+sCount++;
+document.getElementById("sCount").innerText=sCount;
 }
 
-spoedCell.appendChild(btn);
+row.insertCell(5).appendChild(spoedBtn);
 
 /* teller */
-totaal++;
-document.getElementById("count").innerText = totaal;
+pCount++;
+document.getElementById("pCount").innerText=pCount;
 
 /* reset */
-document.getElementById("naam").value="";
-document.getElementById("leeftijd").value="";
-document.getElementById("aandoening").value="";
-document.getElementById("medicatie").value="";
-document.getElementById("verzekering").value="";
+clearInputs();
 
+}
+
+/* AFSPRAKEN */
+function addAfspraak(){
+
+let naam = naamInput("aNaam");
+let type = document.getElementById("aType").value;
+let tijd = naamInput("aTijd");
+
+let li = document.createElement("li");
+li.innerHTML = tijd+" - "+naam+" ("+type+")";
+
+document.getElementById("aList").appendChild(li);
+
+aCount++;
+document.getElementById("aCount").innerText=aCount;
+
+}
+
+/* NOTITIES */
+function saveNote(){
+
+let text = document.getElementById("note").value;
+
+let li = document.createElement("li");
+li.innerText = text;
+
+document.getElementById("noteList").appendChild(li);
+
+document.getElementById("note").value="";
+
+}
+
+/* helpers */
+function naamInput(id){
+return document.getElementById(id).value;
+}
+
+function clearInputs(){
+document.querySelectorAll("input").forEach(i=>i.value="");
 }
