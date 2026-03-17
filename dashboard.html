@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard</title>
+<title>Ziekenhuis Dashboard</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -11,69 +11,64 @@
 <div class="sidebar">
 <h2>🏥 Ziekenhuis</h2>
 
-<a onclick="show('dashboard')">Dashboard</a>
-<a onclick="show('add')">Nieuwe patiënt</a>
-<a onclick="show('patients')">Patiënten</a>
-<a onclick="show('appointments')">Afspraken</a>
-
-<button onclick="logout()">Logout</button>
+<button onclick="show('dash')">Dashboard</button>
+<button onclick="show('add')">Nieuwe patiënt</button>
+<button onclick="show('list')">Patiënten</button>
+<button onclick="show('afspraak')">Afspraken</button>
 
 </div>
 
 <div class="content">
 
 <!-- DASHBOARD -->
-<div id="dashboard" class="section">
-<h1>Dashboard</h1>
-
-<div class="cards">
-<div class="card">Patiënten: <span id="pCount">0</span></div>
-<div class="card">Spoed: <span id="sCount">0</span></div>
-</div>
+<div id="dash" class="card">
+<h2>Overzicht</h2>
+<p>Totaal patiënten: <span id="count">0</span></p>
+<p>Spoed: <span id="spoed">0</span></p>
 </div>
 
-<!-- PATIENT TOEVOEGEN -->
-<div id="add" class="section" style="display:none;">
-<h1>Nieuwe patiënt</h1>
+<!-- ADD -->
+<div id="add" class="card" style="display:none;">
+<h2>Nieuwe patiënt</h2>
 
-<input id="naam" placeholder="Naam"><br>
-<input id="leeftijd" placeholder="Leeftijd"><br>
-<input id="aandoening" placeholder="Aandoening"><br>
-<input id="medicatie" placeholder="Medicatie"><br>
-<input id="verzekering" placeholder="Verzekering"><br>
+<input id="naam" placeholder="Naam">
+<input id="leeftijd" placeholder="Leeftijd">
+<input id="aandoening" placeholder="Aandoening">
+<input id="medicatie" placeholder="Medicatie">
+<input id="verzekering" placeholder="Verzekering">
 
-<button onclick="addPatient()">Opslaan</button>
+<button onclick="add()">Opslaan</button>
 </div>
 
-<!-- PATIENTEN -->
-<div id="patients" class="section" style="display:none;">
-
-<input id="search" placeholder="Zoek..." onkeyup="search()"><br><br>
+<!-- LIST -->
+<div id="list" class="card" style="display:none;">
+<h2>Patiënten</h2>
 
 <table id="table"></table>
 
 </div>
 
 <!-- AFSPRAKEN -->
-<div id="appointments" class="section" style="display:none;">
+<div id="afspraak" class="card" style="display:none;">
+<h2>Afspraken</h2>
 
-<input id="aNaam" placeholder="Naam"><br>
-<input id="aTijd" placeholder="Tijd"><br>
+<input id="aNaam" placeholder="Naam">
+<input id="aDatum" placeholder="Datum">
 
 <select id="aType">
 <option>Normaal</option>
 <option>Dringend</option>
+<option>Spoed</option>
 </select>
 
-<button onclick="addAppointment()">Toevoegen</button>
+<button onclick="addAfspraak()">Toevoegen</button>
 
-<ul id="aList"></ul>
-
+<ul id="lijst"></ul>
 </div>
 
 </div>
 
-<script type="module" src="js/app.js"></script>
+<script src="js/app.js"></script>
 
 </body>
 </html>
