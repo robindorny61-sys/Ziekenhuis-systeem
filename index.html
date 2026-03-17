@@ -89,4 +89,209 @@ border-bottom:1px solid #ddd;
 <div class="sidebar">
 <button onclick="show('dash')">Dashboard</button>
 <button onclick="show('add')">Nieuwe patiënt</button>
-<button onclick="show
+<button onclick="show('list')">Patiënten</button>
+<button onclick="show('afspraak')">Afspraken</button>
+</div>
+
+<div class="content">
+
+<!-- DASHBOARD -->
+<div id="dash" class="card">
+<h2>Overzicht</h2>
+<p>Totaal patiënten: <span id="count">0</span></p>
+<p>Spoed: <span id="spoed">0</span></p>
+</div>
+
+<!-- ADD -->
+<div id="add" class="card" style="display:none;">
+<h2>Nieuwe patiënt</h2>
+
+<input id="naam" placeholder="Naam">
+<input id="leeftijd" placeholder="Leeftijd">
+<input id="aandoening" placeholder="Aandoening">
+<input id="medicatie" placeholder="Medicatie">
+<input id="verzekering" placeholder="Verzekering">
+
+<button class="main" onclick="add()">Opslaan</button>
+</div>
+
+<!-- LIST -->
+<div id="list" class="card" style="display:none;">
+<h2>Patiënten</h2>
+
+<table id="table">
+<tr>
+<th>Naam</th><th>Leeftijd</th><th>Aandoening</th>
+<th>Medicatie</th><th>Verzekering</th>
+<th>Status</th><th>Acties</th>
+</tr>
+</table>
+
+</div>
+
+<!-- AFSPRAKEN -->
+<div id="afspraak" class="card" style="display:none;">
+<h2>Afspraken</h2>
+
+<input id="aNaam" placeholder="Naam">
+<input id="aDatum" placeholder="Datum">
+<select id="aType">
+<option>Normaal</option>
+<option>Dringend</option>
+<option>Spoed</option>
+</select>
+
+<button class="main" onclick="addAfspraak()">Toevoegen</button>
+
+<ul id="lijst"></ul>
+
+</div>
+
+</div>
+</div>
+
+<script>
+
+/* DATA */
+let patients = JSON.parse(localStorage.getItem("patients")) || [];
+let afspraken = JSON.parse(localStorage.getItem("afspraken")) || [];
+
+/* NAV */
+function show(id){
+document.querySelectorAll(".card").forEach(x=>x.style.display="none");
+document.getElementById(id).style.display="block";
+render();
+}
+
+/* ADD PATIENT */
+function add(){
+
+let p = {
+naam: v("naam"),
+leeftijd: v("leeftijd"),
+aandoening: v("aandoening"),
+medicatie: v("medicatie"),
+verzekering: v("verzekering"),
+spoed:false
+};
+
+patients.push(p);
+save();
+render();
+
+alert("Opgeslagen!");
+}
+
+/* DELETE */
+function del(i){
+patients.splice(i,1);
+save();
+render();
+}
+
+/* SPOED */
+function toggle(i){
+patients[i].spoed = !patients[i].spoed;
+save();
+render();
+}
+
+/* RENDER */
+function render(){
+
+let table = document.getElementById("table");
+if(table){
+
+table.innerHTML = `
+<tr>
+<th>Naam</th><th>Leeftijd</th><th>Aandoening</th>
+<th>Medicatie</th><th>Verzekering</th>
+<th>Status</th><th>Acties</th>
+</tr>
+`;
+
+let spoed = 0;
+
+patients.forEach((p,i)=>{
+
+let r = table.insertRow();
+
+r.insertCell(0).innerText=p.naam;
+r.insertCell(1).innerText=p.leeftijd;
+r.insertCell(2).innerText=p.aandoening;
+r.insertCell(3).innerText=p.medicatie;
+r.insertCell(4).innerText=p.verzekering;
+
+let status = document.createElement("button");
+status.innerText = p.spoed ? "🚨 SPOED" : "Normaal";
+
+status.onclick = ()=>toggle(i);
+
+if(p.spoed) spoed++;
+
+r.insertCell(5).appendChild(status);
+
+let delBtn = document.createElement("button");
+delBtn.innerText="❌";
+delBtn.onclick=()=>del(i);
+
+r.insertCell(6).appendChild(delBtn);
+
+});
+
+document.getElementById("count").innerText = patients.length;
+document.getElementById("spoed").innerText = spoed;
+}
+
+/* AFSPRAAK */
+function addAfspraak(){
+
+let a = {
+naam: v("aNaam"),
+datum: v("aDatum"),
+type: document.getElementById("aType").value
+};
+
+afspraken.push(a);
+localStorage.setItem("afspraken", JSON.stringify(afspraken));
+
+renderAfspraak();
+}
+
+/* RENDER AFSPRAKEN */
+function renderAfspraak(){
+
+let ul = document.getElementById("lijst");
+if(!ul) return;
+
+ul.innerHTML="";
+
+afspraken.forEach(a=>{
+let li = document.createElement("li");
+
+li.innerText = a.datum+" - "+a.naam+" ("+a.type+")";
+
+if(a.type==="Spoed") li.style.color="red";
+
+ul.appendChild(li);
+});
+}
+
+/* SAVE */
+function save(){
+localStorage.setItem("patients", JSON.stringify(patients));
+}
+
+/* HELPER */
+function v(id){
+return document.getElementById(id).value;
+}
+
+/* START */
+render();
+renderAfspraak();
+
+</script>
+
+</body>
+</html>
