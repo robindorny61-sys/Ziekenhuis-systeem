@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<title>Ziekenhuis Dashboard</title>
+<title>Ziekenhuis Systeem</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -11,9 +11,11 @@
 <div class="sidebar">
 <h2>🏥 Ziekenhuis</h2>
 
-<a onclick="showSection('dashboard')">Dashboard</a>
-<a onclick="showSection('toevoegen')">Nieuwe patiënt</a>
-<a onclick="showSection('lijst')">Overzicht</a>
+<a onclick="show('dashboard')">Dashboard</a>
+<a onclick="show('patient')">Nieuwe patiënt</a>
+<a onclick="show('lijst')">Patiënten</a>
+<a onclick="show('afspraak')">Afspraken</a>
+<a onclick="show('notities')">Notities</a>
 
 </div>
 
@@ -24,35 +26,29 @@
 <h1>Dashboard</h1>
 
 <div class="cards">
-<div class="card"><h3>Patiënten</h3><p id="count">0</p></div>
-<div class="card"><h3>Spoed</h3><p id="spoedCount">0</p></div>
+<div class="card"><h3>Patiënten</h3><p id="pCount">0</p></div>
+<div class="card"><h3>Spoed</h3><p id="sCount">0</p></div>
+<div class="card"><h3>Afspraken</h3><p id="aCount">0</p></div>
+</div>
 </div>
 
-</div>
-
-<!-- PATIENT TOEVOEGEN -->
-<div id="toevoegen" class="section" style="display:none;">
+<!-- NIEUWE PATIENT -->
+<div id="patient" class="section" style="display:none;">
 <h1>Nieuwe patiënt</h1>
 
 <input id="naam" placeholder="Naam"><br><br>
 <input id="leeftijd" type="number" placeholder="Leeftijd"><br><br>
 <input id="aandoening" placeholder="Aandoening"><br><br>
 <input id="medicatie" placeholder="Medicatie"><br><br>
-
-<select id="type">
-<option value="Normaal">Normale afspraak</option>
-<option value="Dringend">Dringend</option>
-</select><br><br>
-
 <input id="verzekering" placeholder="Verzekering"><br><br>
 
-<button onclick="addPatient()">Toevoegen</button>
+<button onclick="addPatient()">Opslaan</button>
 
 </div>
 
-<!-- OVERZICHT -->
+<!-- PATIENT LIJST -->
 <div id="lijst" class="section" style="display:none;">
-<h1>Patiënten overzicht</h1>
+<h1>Patiënten</h1>
 
 <table id="table">
 <tr>
@@ -60,11 +56,41 @@
 <th>Leeftijd</th>
 <th>Aandoening</th>
 <th>Medicatie</th>
-<th>Type</th>
 <th>Verzekering</th>
 <th>Spoed</th>
 </tr>
 </table>
+
+</div>
+
+<!-- AFSPRAKEN -->
+<div id="afspraak" class="section" style="display:none;">
+<h1>Afspraken</h1>
+
+<input id="aNaam" placeholder="Naam patiënt"><br><br>
+
+<select id="aType">
+<option>Normaal</option>
+<option>Dringend</option>
+</select><br><br>
+
+<input id="aTijd" placeholder="Tijd bv 14:00"><br><br>
+
+<button onclick="addAfspraak()">Toevoegen</button>
+
+<ul id="aList"></ul>
+
+</div>
+
+<!-- NOTITIES -->
+<div id="notities" class="section" style="display:none;">
+<h1>Dokter Notities</h1>
+
+<textarea id="note" placeholder="Schrijf hier..." style="width:100%;height:100px;"></textarea><br><br>
+
+<button onclick="saveNote()">Opslaan</button>
+
+<ul id="noteList"></ul>
 
 </div>
 
