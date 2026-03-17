@@ -1,17 +1,22 @@
-/* ================= TELLERS ================= */
+/* ================= DATA ================= */
 
-let patientCount = 0;
-let spoedCount = 0;
-let afspraakCount = 0;
+let patients = JSON.parse(localStorage.getItem("patients")) || [];
 
 /* ================= NAVIGATIE ================= */
 
 function show(id){
-document.querySelectorAll(".section").forEach(section => {
-section.style.display = "none";
-});
+document.querySelectorAll(".section").forEach(s => s.style.display="none");
+document.getElementById(id).style.display="block";
 
-document.getElementById(id).style.display = "block";
+if(id === "lijst"){
+renderPatients();
+}
+}
+
+/* ================= OPSLAAN ================= */
+
+function saveData(){
+localStorage.setItem("patients", JSON.stringify(patients));
 }
 
 /* ================= PATIENT TOEVOEGEN ================= */
@@ -24,118 +29,146 @@ let aandoening = document.getElementById("aandoening").value.trim();
 let medicatie = document.getElementById("medicatie").value.trim();
 let verzekering = document.getElementById("verzekering").value.trim();
 
-/* CHECK */
 if(naam === "" || leeftijd === ""){
 alert("Vul naam en leeftijd in!");
 return;
 }
 
-let table = document.getElementById("table");
-
-if(!table){
-alert("Ga naar 'Patiënten' om te zien!");
-return;
-}
-
-/* NIEUWE RIJ */
-let row = table.insertRow();
-
-/* DATA */
-row.insertCell(0).innerText = naam;
-row.insertCell(1).innerText = leeftijd;
-row.insertCell(2).innerText = aandoening;
-row.insertCell(3).innerText = medicatie;
-row.insertCell(4).innerText = verzekering;
-
-/* SPOED KNOP */
-let spoedBtn = document.createElement("button");
-spoedBtn.innerText = "🚨";
-
-spoedBtn.onclick = function(){
-
-if(spoedBtn.innerText === "🚨"){
-spoedBtn.innerText = "SPOED";
-spoedBtn.style.background = "red";
-
-spoedCount++;
-}else{
-spoedBtn.innerText = "🚨";
-spoedBtn.style.background = "";
-
-spoedCount--;
-}
-
-document.getElementById("sCount").innerText = spoedCount;
-
+let patient = {
+naam,
+leeftijd,
+aandoening,
+medicatie,
+verzekering,
+spoed:false
 };
 
-/* TOEVOEGEN */
-row.insertCell(5).appendChild(spoedBtn);
-
-/* TELLER */
-patientCount++;
-document.getElementById("pCount").innerText = patientCount;
-
-/* RESET */
-document.getElementById("naam").value = "";
-document.getElementById("leeftijd").value = "";
-document.getElementById("aandoening").value = "";
-document.getElementById("medicatie").value = "";
-document.getElementById("verzekering").value = "";
+patients.push(patient);
+saveData();
+updateDashboard();
+clearInputs();
 
 alert("Patiënt opgeslagen!");
+}
+
+/* ================= RENDER ================= */
+
+function renderPatients(){
+
+let table = document.getElementById("table");
+
+/* reset tabel */
+table.innerHTML = `
+<tr>
+<th>Naam</th>
+<th>Leeftijd</th>
+<th>Aandoening</th>
+<th>Medicatie</th>
+<th>Verzekering</th>
+<th>Spoed</th>
+<th>Acties</th>
+</tr>
+`;
+
+patients.forEach((p, index) => {
+
+let row = table.insertRow();
+
+row.insertCell(0).innerText = p.naam;
+row.insertCell(1).innerText = p.leeftijd;
+row.insertCell(2).innerText = p.aandoening;
+row.insertCell(3).innerText = p.medicatie;
+row.insertCell(4).innerText = p.verzekering;
+
+/* SPOED */
+let spoedBtn = document.createElement("button");
+spoedBtn.innerText = p.spoed ? "SPOED" : "🚨";
+
+if(p.spoed){
+spoedBtn.style.background = "red";
+}
+
+spoedBtn.onclick = function(){
+p.spoed = !p.spoed;
+saveData();
+renderPatients();
+updateDashboard();
+};
+
+row.insertCell(5).appendChild(spoedBtn);
+
+/* ACTIES */
+let acties = document.createElement("div");
+
+/* verwijderen */
+let delBtn = document.createElement("button");
+delBtn.innerText = "❌";
+delBtn.onclick = function(){
+patients.splice(index,1);
+saveData();
+renderPatients();
+updateDashboard();
+};
+
+/* bewerken */
+let editBtn = document.createElement("button");
+editBtn.innerText = "✏️";
+editBtn.onclick = function(){
+
+let nieuweNaam = prompt("Nieuwe naam:", p.naam);
+if(nieuweNaam) p.naam = nieuweNaam;
+
+saveData();
+renderPatients();
+};
+
+acties.appendChild(editBtn);
+acties.appendChild(delBtn);
+
+row.insertCell(6).appendChild(acties);
+
+});
 
 }
 
-/* ================= AFSPRAKEN ================= */
+/* ================= DASHBOARD ================= */
 
-function addAfspraak(){
+function updateDashboard(){
 
-let naam = document.getElementById("aNaam").value.trim();
-let type = document.getElementById("aType").value;
-let tijd = document.getElementById("aTijd").value.trim();
+let totaal = patients.length;
+let spoed = patients.filter(p => p.spoed).length;
 
-if(naam === "" || tijd === ""){
-alert("Vul alles in!");
-return;
-}
-
-let li = document.createElement("li");
-li.innerText = tijd + " - " + naam + " (" + type + ")";
-
-/* kleur bij dringend */
-if(type === "Dringend"){
-li.style.color = "red";
-}
-
-document.getElementById("aList").appendChild(li);
-
-/* teller */
-afspraakCount++;
-document.getElementById("aCount").innerText = afspraakCount;
-
-/* reset */
-document.getElementById("aNaam").value = "";
-document.getElementById("aTijd").value = "";
+document.getElementById("pCount").innerText = totaal;
+document.getElementById("sCount").innerText = spoed;
 
 }
 
-/* ================= NOTITIES ================= */
+/* ================= ZOEKEN ================= */
 
-function saveNote(){
+function searchPatient(){
 
-let text = document.getElementById("note").value.trim();
+let input = document.getElementById("search").value.toLowerCase();
 
-if(text === ""){
-alert("Schrijf iets!");
-return;
+let rows = document.querySelectorAll("#table tr");
+
+rows.forEach((row, i) => {
+
+if(i === 0) return;
+
+let naam = row.cells[0].innerText.toLowerCase();
+
+row.style.display = naam.includes(input) ? "" : "none";
+
+});
+
 }
 
-let li = document.createElement("li");
-li.innerText = text;
+/* ================= HELPERS ================= */
 
-document.getElementById("noteList").appendChild(li);
-
-document.getElementById("note").value = "";
-
+function clearInputs(){
+document.querySelectorAll("input").forEach(i => i.value="");
 }
+
+/* ================= START ================= */
+
+updateDashboard();
