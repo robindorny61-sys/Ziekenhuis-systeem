@@ -2,23 +2,91 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<title>Login</title>
-<link rel="stylesheet" href="css/style.css">
+<title>Ziekenhuis Systeem PRO</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#f1f5f9;
+}
+
+header{
+background:#0f172a;
+color:white;
+padding:15px;
+font-size:20px;
+}
+
+.container{
+display:flex;
+}
+
+.sidebar{
+width:220px;
+background:#1e293b;
+color:white;
+height:100vh;
+padding:15px;
+}
+
+.sidebar button{
+width:100%;
+padding:10px;
+margin:5px 0;
+background:none;
+color:white;
+border:none;
+cursor:pointer;
+text-align:left;
+}
+
+.content{
+flex:1;
+padding:20px;
+}
+
+.card{
+background:white;
+padding:15px;
+border-radius:10px;
+margin-bottom:20px;
+}
+
+input, select{
+width:100%;
+padding:10px;
+margin:5px 0;
+}
+
+button.main{
+background:#2563eb;
+color:white;
+padding:10px;
+border:none;
+cursor:pointer;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+td,th{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+</style>
+
 </head>
 
-<body class="login-body">
+<body>
 
-<div class="login-container">
-<h1>🏥 Login</h1>
+<header>🏥 Ziekenhuis Dashboard</header>
 
-<input id="user" placeholder="Gebruiker">
-<input id="pass" type="password" placeholder="Wachtwoord">
+<div class="container">
 
-<button onclick="login()">Login</button>
-
-</div>
-
-<script src="js/app.js"></script>
-
-</body>
-</html>
+<div class="sidebar">
+<button onclick="show('dash')">Dashboard</button>
+<button onclick="show('add')">Nieuwe patiënt</button>
+<button onclick="show
