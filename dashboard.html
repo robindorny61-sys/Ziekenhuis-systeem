@@ -13,7 +13,8 @@
 
 <a onclick="show('dashboard')">Dashboard</a>
 <a onclick="show('add')">Nieuwe patiënt</a>
-<a onclick="show('list')">Patiënten</a>
+<a onclick="show('patients')">Patiënten</a>
+<a onclick="show('appointments')">Afspraken</a>
 
 <button onclick="logout()">Logout</button>
 
@@ -21,27 +22,52 @@
 
 <div class="content">
 
+<!-- DASHBOARD -->
 <div id="dashboard" class="section">
 <h1>Dashboard</h1>
-<p>Patiënten: <span id="count">0</span></p>
+
+<div class="cards">
+<div class="card">Patiënten: <span id="pCount">0</span></div>
+<div class="card">Spoed: <span id="sCount">0</span></div>
+</div>
 </div>
 
+<!-- PATIENT TOEVOEGEN -->
 <div id="add" class="section" style="display:none;">
 <h1>Nieuwe patiënt</h1>
 
-<input id="naam" placeholder="Naam"><br><br>
-<input id="leeftijd" placeholder="Leeftijd"><br><br>
-<input id="aandoening" placeholder="Aandoening"><br><br>
-<input id="medicatie" placeholder="Medicatie"><br><br>
-<input id="verzekering" placeholder="Verzekering"><br><br>
+<input id="naam" placeholder="Naam"><br>
+<input id="leeftijd" placeholder="Leeftijd"><br>
+<input id="aandoening" placeholder="Aandoening"><br>
+<input id="medicatie" placeholder="Medicatie"><br>
+<input id="verzekering" placeholder="Verzekering"><br>
 
 <button onclick="addPatient()">Opslaan</button>
 </div>
 
-<div id="list" class="section" style="display:none;">
-<h1>Patiënten</h1>
+<!-- PATIENTEN -->
+<div id="patients" class="section" style="display:none;">
+
+<input id="search" placeholder="Zoek..." onkeyup="search()"><br><br>
 
 <table id="table"></table>
+
+</div>
+
+<!-- AFSPRAKEN -->
+<div id="appointments" class="section" style="display:none;">
+
+<input id="aNaam" placeholder="Naam"><br>
+<input id="aTijd" placeholder="Tijd"><br>
+
+<select id="aType">
+<option>Normaal</option>
+<option>Dringend</option>
+</select>
+
+<button onclick="addAppointment()">Toevoegen</button>
+
+<ul id="aList"></ul>
 
 </div>
 
