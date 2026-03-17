@@ -1,188 +1,106 @@
-/* ================= DATA ================= */
+import { db } from "./firebase.js";
+import {
+collection, addDoc, getDocs, deleteDoc, doc, updateDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-let patients = JSON.parse(localStorage.getItem("patients")) || [];
-
-/* ================= NAVIGATIE ================= */
-
-function show(id){
-document.querySelectorAll(".section").forEach(s => s.style.display="none");
+/* NAV */
+window.show = (id)=>{
+document.querySelectorAll(".section").forEach(s=>s.style.display="none");
 document.getElementById(id).style.display="block";
-
-if(id === "lijst"){
-renderPatients();
-}
+if(id==="patients") load();
 }
 
-/* ================= OPSLAAN ================= */
-
-function saveData(){
-localStorage.setItem("patients", JSON.stringify(patients));
-}
-
-/* ================= PATIENT TOEVOEGEN ================= */
-
-function addPatient(){
-
-let naam = document.getElementById("naam").value.trim();
-let leeftijd = document.getElementById("leeftijd").value.trim();
-let aandoening = document.getElementById("aandoening").value.trim();
-let medicatie = document.getElementById("medicatie").value.trim();
-let verzekering = document.getElementById("verzekering").value.trim();
-
-if(naam === "" || leeftijd === ""){
-alert("Vul naam en leeftijd in!");
-return;
-}
-
-let patient = {
-naam,
-leeftijd,
-aandoening,
-medicatie,
-verzekering,
+/* ADD */
+window.addPatient = async ()=>{
+await addDoc(collection(db,"patients"),{
+naam:naam.value,
+leeftijd:leeftijd.value,
+aandoening:aandoening.value,
+medicatie:medicatie.value,
+verzekering:verzekering.value,
 spoed:false
-};
-
-patients.push(patient);
-saveData();
-updateDashboard();
-clearInputs();
-
-alert("Patiënt opgeslagen!");
+});
+alert("Opgeslagen");
 }
 
-/* ================= RENDER ================= */
-
-function renderPatients(){
+/* LOAD */
+async function load(){
 
 let table = document.getElementById("table");
 
-/* reset tabel */
-table.innerHTML = `
+table.innerHTML=`
 <tr>
-<th>Naam</th>
-<th>Leeftijd</th>
-<th>Aandoening</th>
-<th>Medicatie</th>
-<th>Verzekering</th>
-<th>Spoed</th>
-<th>Acties</th>
+<th>Naam</th><th>Leeftijd</th><th>Aandoening</th>
+<th>Medicatie</th><th>Verzekering</th><th>Spoed</th><th>Acties</th>
 </tr>
 `;
 
-patients.forEach((p, index) => {
+let data = await getDocs(collection(db,"patients"));
 
-let row = table.insertRow();
+let spoedCount=0;
+let totaal=0;
 
-row.insertCell(0).innerText = p.naam;
-row.insertCell(1).innerText = p.leeftijd;
-row.insertCell(2).innerText = p.aandoening;
-row.insertCell(3).innerText = p.medicatie;
-row.insertCell(4).innerText = p.verzekering;
+data.forEach(d=>{
+
+let p=d.data();
+let row=table.insertRow();
+
+row.insertCell(0).innerText=p.naam;
+row.insertCell(1).innerText=p.leeftijd;
+row.insertCell(2).innerText=p.aandoening;
+row.insertCell(3).innerText=p.medicatie;
+row.insertCell(4).innerText=p.verzekering;
 
 /* SPOED */
-let spoedBtn = document.createElement("button");
-spoedBtn.innerText = p.spoed ? "SPOED" : "🚨";
+let btn=document.createElement("button");
+btn.innerText=p.spoed?"SPOED":"🚨";
 
-if(p.spoed){
-spoedBtn.style.background = "red";
-}
+if(p.spoed){btn.style.background="red";spoedCount++;}
 
-spoedBtn.onclick = function(){
-p.spoed = !p.spoed;
-saveData();
-renderPatients();
-updateDashboard();
+btn.onclick=async ()=>{
+await updateDoc(doc(db,"patients",d.id),{
+spoed:!p.spoed
+});
+load();
 };
 
-row.insertCell(5).appendChild(spoedBtn);
+row.insertCell(5).appendChild(btn);
 
-/* ACTIES */
-let acties = document.createElement("div");
-
-/* verwijderen */
-let delBtn = document.createElement("button");
-delBtn.innerText = "❌";
-delBtn.onclick = function(){
-patients.splice(index,1);
-saveData();
-renderPatients();
-updateDashboard();
+/* DELETE */
+let del=document.createElement("button");
+del.innerText="❌";
+del.onclick=async ()=>{
+await deleteDoc(doc(db,"patients",d.id));
+load();
 };
 
-/* bewerken */
-let editBtn = document.createElement("button");
-editBtn.innerText = "✏️";
-editBtn.onclick = function(){
+row.insertCell(6).appendChild(del);
 
-let nieuweNaam = prompt("Nieuwe naam:", p.naam);
-if(nieuweNaam) p.naam = nieuweNaam;
-
-saveData();
-renderPatients();
-};
-
-acties.appendChild(editBtn);
-acties.appendChild(delBtn);
-
-row.insertCell(6).appendChild(acties);
+totaal++;
 
 });
 
-}
-
-/* ================= DASHBOARD ================= */
-
-function updateDashboard(){
-
-let totaal = patients.length;
-let spoed = patients.filter(p => p.spoed).length;
-
-document.getElementById("pCount").innerText = totaal;
-document.getElementById("sCount").innerText = spoed;
+pCount.innerText=totaal;
+sCount.innerText=spoedCount;
 
 }
 
-/* ================= ZOEKEN ================= */
-
-function searchPatient(){
-
-let input = document.getElementById("search").value.toLowerCase();
-
-let rows = document.querySelectorAll("#table tr");
-
-rows.forEach((row, i) => {
-
-if(i === 0) return;
-
-let naam = row.cells[0].innerText.toLowerCase();
-
-row.style.display = naam.includes(input) ? "" : "none";
-
+/* SEARCH */
+window.search=()=>{
+let val=search.value.toLowerCase();
+document.querySelectorAll("#table tr").forEach((r,i)=>{
+if(i===0)return;
+r.style.display=r.innerText.toLowerCase().includes(val)?"":"none";
 });
-
 }
 
-/* ================= HELPERS ================= */
-
-function clearInputs(){
-document.querySelectorAll("input").forEach(i => i.value="");
+/* AFSPRAKEN */
+window.addAppointment=()=>{
+let li=document.createElement("li");
+li.innerText=aTijd.value+" - "+aNaam.value+" ("+aType.value+")";
+if(aType.value==="Dringend") li.style.color="red";
+aList.appendChild(li);
 }
 
-/* ================= START ================= */
-
-updateDashboard();
-/* ================= LOGIN CHECK ================= */
-
-let currentUser = localStorage.getItem("currentUser");
-
-if(!currentUser){
-window.location.href = "index.html";
-}
-
-/* ================= LOGOUT ================= */
-
-function logout(){
-localStorage.removeItem("currentUser");
-window.location.href = "index.html";
-}
+/* LOGOUT */
+window.logout=()=>location.href="index.html";
