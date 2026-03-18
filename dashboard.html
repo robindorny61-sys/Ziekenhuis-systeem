@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<title>Ziekenhuis Dashboard</title>
+<title>Dashboard</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -11,59 +11,57 @@
 <div class="sidebar">
 <h2>🏥 Ziekenhuis</h2>
 
-<button onclick="show('dash')">Dashboard</button>
-<button onclick="show('add')">Nieuwe patiënt</button>
-<button onclick="show('list')">Patiënten</button>
-<button onclick="show('afspraak')">Afspraken</button>
+<a onclick="show('home')">Dashboard</a>
+<a onclick="show('add')">Nieuwe patiënt</a>
+<a onclick="show('list')">Patiënten</a>
+<a onclick="show('appointments')">Afspraken</a>
 
+<button onclick="logout()">Logout</button>
 </div>
 
 <div class="content">
 
-<!-- DASHBOARD -->
-<div id="dash" class="card">
-<h2>Overzicht</h2>
-<p>Totaal patiënten: <span id="count">0</span></p>
-<p>Spoed: <span id="spoed">0</span></p>
+<div id="home" class="section">
+<h1>Dashboard</h1>
+<p>Patiënten: <span id="count">0</span></p>
+<p>Spoed: <span id="spoedCount">0</span></p>
 </div>
 
-<!-- ADD -->
-<div id="add" class="card" style="display:none;">
-<h2>Nieuwe patiënt</h2>
+<div id="add" class="section" style="display:none;">
+<h1>Nieuwe patiënt</h1>
 
-<input id="naam" placeholder="Naam">
-<input id="leeftijd" placeholder="Leeftijd">
-<input id="aandoening" placeholder="Aandoening">
-<input id="medicatie" placeholder="Medicatie">
-<input id="verzekering" placeholder="Verzekering">
+<input id="naam" placeholder="Naam"><br>
+<input id="leeftijd" placeholder="Leeftijd"><br>
+<input id="aandoening" placeholder="Aandoening"><br>
+<input id="medicatie" placeholder="Medicatie"><br>
 
-<button onclick="add()">Opslaan</button>
+<button onclick="addPatient()">Opslaan</button>
 </div>
 
-<!-- LIST -->
-<div id="list" class="card" style="display:none;">
-<h2>Patiënten</h2>
+<div id="list" class="section" style="display:none;">
+<h1>Patiënten</h1>
 
-<table id="table"></table>
-
+<table id="table">
+<tr>
+<th>Naam</th><th>Leeftijd</th><th>Aandoening</th><th>Medicatie</th><th>Spoed</th>
+</tr>
+</table>
 </div>
 
-<!-- AFSPRAKEN -->
-<div id="afspraak" class="card" style="display:none;">
-<h2>Afspraken</h2>
+<div id="appointments" class="section" style="display:none;">
+<h1>Afspraken</h1>
 
 <input id="aNaam" placeholder="Naam">
-<input id="aDatum" placeholder="Datum">
+<input id="aTijd" placeholder="Tijd">
 
 <select id="aType">
 <option>Normaal</option>
 <option>Dringend</option>
-<option>Spoed</option>
 </select>
 
 <button onclick="addAfspraak()">Toevoegen</button>
 
-<ul id="lijst"></ul>
+<ul id="aList"></ul>
 </div>
 
 </div>
