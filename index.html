@@ -2,23 +2,348 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<title>Login</title>
-<link rel="stylesheet" href="css/style.css">
+<title>Ziekenhuis Systeem PRO</title>
+
+<style>
+body{
+margin:0;
+font-family:'Segoe UI', Arial;
+background:#eef2f7;
+}
+
+/* HEADER */
+header{
+background:#0f172a;
+color:white;
+padding:15px 20px;
+font-size:22px;
+font-weight:600;
+}
+
+/* LAYOUT */
+.container{
+display:flex;
+}
+
+/* SIDEBAR */
+.sidebar{
+width:230px;
+background:#1e293b;
+color:white;
+height:100vh;
+padding:20px;
+}
+
+.sidebar h2{
+margin-bottom:20px;
+}
+
+.sidebar button{
+width:100%;
+padding:12px;
+margin:8px 0;
+background:#334155;
+border:none;
+color:white;
+cursor:pointer;
+border-radius:6px;
+transition:0.2s;
+}
+
+.sidebar button:hover{
+background:#3b82f6;
+}
+
+/* CONTENT */
+.content{
+flex:1;
+padding:25px;
+}
+
+/* CARDS */
+.card{
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 5px 15px rgba(0,0,0,0.08);
+margin-bottom:20px;
+}
+
+/* INPUT */
+input, select{
+width:100%;
+padding:12px;
+margin:8px 0;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+/* BUTTON */
+.main-btn{
+background:#2563eb;
+color:white;
+border:none;
+padding:12px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.main-btn:hover{
+background:#1d4ed8;
+}
+
+/* TABLE */
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+td,th{
+padding:12px;
+border-bottom:1px solid #ddd;
+}
+
+/* STATUS */
+.spoed{
+background:red;
+color:white;
+border:none;
+padding:6px 10px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.normaal{
+background:#10b981;
+color:white;
+border:none;
+padding:6px 10px;
+border-radius:6px;
+cursor:pointer;
+}
+
+/* DELETE */
+.delete{
+background:#ef4444;
+color:white;
+border:none;
+padding:6px 10px;
+border-radius:6px;
+cursor:pointer;
+}
+</style>
+
 </head>
 
-<body class="login-body">
+<body>
 
-<div class="login-container">
-<h1>🏥 Login</h1>
+<header>🏥 Ziekenhuis Management Systeem</header>
 
-<input id="user" placeholder="Gebruiker">
-<input id="pass" type="password" placeholder="Wachtwoord">
+<div class="container">
 
-<button onclick="login()">Login</button>
+<div class="sidebar">
+<h2>Menu</h2>
 
+<button onclick="show('dash')">Dashboard</button>
+<button onclick="show('add')">Nieuwe patiënt</button>
+<button onclick="show('list')">Patiënten</button>
+<button onclick="show('afspraak')">Afspraken</button>
 </div>
 
-<script src="js/app.js"></script>
+<div class="content">
+
+<!-- DASHBOARD -->
+<div id="dash" class="card">
+<h2>📊 Overzicht</h2>
+<p><b>Totaal patiënten:</b> <span id="count">0</span></p>
+<p><b>Spoedgevallen:</b> <span id="spoed">0</span></p>
+</div>
+
+<!-- ADD -->
+<div id="add" class="card" style="display:none;">
+<h2>➕ Nieuwe patiënt</h2>
+
+<input id="naam" placeholder="Naam">
+<input id="leeftijd" placeholder="Leeftijd">
+<input id="aandoening" placeholder="Aandoening">
+<input id="medicatie" placeholder="Medicatie">
+<input id="verzekering" placeholder="Verzekering">
+
+<button class="main-btn" onclick="add()">Opslaan</button>
+</div>
+
+<!-- LIST -->
+<div id="list" class="card" style="display:none;">
+<h2>👥 Patiënten</h2>
+
+<table id="table"></table>
+</div>
+
+<!-- AFSPRAKEN -->
+<div id="afspraak" class="card" style="display:none;">
+<h2>📅 Afspraken</h2>
+
+<input id="aNaam" placeholder="Naam">
+<input id="aDatum" placeholder="Datum">
+
+<select id="aType">
+<option>Normaal</option>
+<option>Dringend</option>
+<option>Spoed</option>
+</select>
+
+<button class="main-btn" onclick="addAfspraak()">Toevoegen</button>
+
+<ul id="lijst"></ul>
+</div>
+
+</div>
+</div>
+
+<script>
+
+let patients = [];
+let afspraken = [];
+
+/* NAV */
+function show(id){
+document.querySelectorAll(".card").forEach(c=>c.style.display="none");
+document.getElementById(id).style.display="block";
+render();
+renderAfspraak();
+}
+
+/* ADD PATIENT */
+function add(){
+
+let naam = document.getElementById("naam").value;
+
+if(!naam){
+alert("Naam verplicht!");
+return;
+}
+
+let p = {
+naam,
+leeftijd: v("leeftijd"),
+aandoening: v("aandoening"),
+medicatie: v("medicatie"),
+verzekering: v("verzekering"),
+spoed:false
+};
+
+patients.push(p);
+render();
+
+alert("Patiënt opgeslagen!");
+}
+
+/* DELETE */
+function del(i){
+patients.splice(i,1);
+render();
+}
+
+/* SPOED */
+function toggle(i){
+patients[i].spoed = !patients[i].spoed;
+render();
+}
+
+/* RENDER */
+function render(){
+
+let table = document.getElementById("table");
+if(!table) return;
+
+table.innerHTML = `
+<tr>
+<th>Naam</th><th>Leeftijd</th><th>Aandoening</th>
+<th>Medicatie</th><th>Verzekering</th>
+<th>Status</th><th>Acties</th>
+</tr>
+`;
+
+let spoed = 0;
+
+patients.forEach((p,i)=>{
+
+let r = table.insertRow();
+
+r.insertCell(0).innerText=p.naam;
+r.insertCell(1).innerText=p.leeftijd;
+r.insertCell(2).innerText=p.aandoening;
+r.insertCell(3).innerText=p.medicatie;
+r.insertCell(4).innerText=p.verzekering;
+
+let statusBtn = document.createElement("button");
+
+if(p.spoed){
+statusBtn.className="spoed";
+statusBtn.innerText="SPOED";
+spoed++;
+}else{
+statusBtn.className="normaal";
+statusBtn.innerText="Normaal";
+}
+
+statusBtn.onclick = ()=>toggle(i);
+
+r.insertCell(5).appendChild(statusBtn);
+
+let delBtn = document.createElement("button");
+delBtn.className="delete";
+delBtn.innerText="Verwijder";
+delBtn.onclick=()=>del(i);
+
+r.insertCell(6).appendChild(delBtn);
+
+});
+
+document.getElementById("count").innerText = patients.length;
+document.getElementById("spoed").innerText = spoed;
+}
+
+/* AFSPRAKEN */
+function addAfspraak(){
+
+let a = {
+naam: v("aNaam"),
+datum: v("aDatum"),
+type: document.getElementById("aType").value
+};
+
+afspraken.push(a);
+
+renderAfspraak();
+}
+
+/* RENDER AFSPRAKEN */
+function renderAfspraak(){
+
+let ul = document.getElementById("lijst");
+if(!ul) return;
+
+ul.innerHTML="";
+
+afspraken.forEach(a=>{
+let li = document.createElement("li");
+
+li.innerText = a.datum+" - "+a.naam+" ("+a.type+")";
+
+if(a.type==="Spoed") li.style.color="red";
+
+ul.appendChild(li);
+});
+}
+
+/* HELPER */
+function v(id){
+return document.getElementById(id).value;
+}
+
+</script>
 
 </body>
 </html>
