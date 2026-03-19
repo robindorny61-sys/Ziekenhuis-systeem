@@ -5,164 +5,110 @@
 <title>Ziekenhuis Systeem PRO</title>
 
 <style>
-body{
-margin:0;
-font-family:'Segoe UI', Arial;
-background:#eef2f7;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+body{background:#eef2f7;}
 
-/* HEADER */
 header{
-background:#0f172a;
-color:white;
-padding:15px 20px;
-font-size:22px;
-font-weight:600;
+background:#1e293b;color:white;padding:15px 25px;
+display:flex;justify-content:space-between;
 }
 
-/* LAYOUT */
-.container{
-display:flex;
-}
+.container{display:flex;}
 
-/* SIDEBAR */
 .sidebar{
-width:230px;
-background:#1e293b;
-color:white;
-height:100vh;
-padding:20px;
-}
-
-.sidebar h2{
-margin-bottom:20px;
+width:240px;background:#0f172a;color:white;height:100vh;padding:20px;
 }
 
 .sidebar button{
-width:100%;
-padding:12px;
-margin:8px 0;
-background:#334155;
-border:none;
-color:white;
-cursor:pointer;
-border-radius:6px;
-transition:0.2s;
+width:100%;padding:12px;margin-bottom:10px;
+background:#1e293b;border:none;color:white;
+cursor:pointer;border-radius:8px;
 }
 
-.sidebar button:hover{
-background:#3b82f6;
-}
+.sidebar button:hover{background:#2563eb;}
 
-/* CONTENT */
-.content{
-flex:1;
-padding:25px;
-}
+.content{flex:1;padding:25px;}
 
-/* CARDS */
 .card{
-background:white;
-padding:20px;
-border-radius:12px;
-box-shadow:0 5px 15px rgba(0,0,0,0.08);
+background:white;padding:20px;border-radius:12px;
+box-shadow:0 4px 10px rgba(0,0,0,0.05);
 margin-bottom:20px;
 }
 
-/* INPUT */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:20px;
+margin-bottom:20px;
+}
+
 input, select{
-width:100%;
-padding:12px;
-margin:8px 0;
-border-radius:6px;
-border:1px solid #ccc;
+width:100%;padding:10px;margin-top:10px;
+border-radius:8px;border:1px solid #ccc;
 }
 
-/* BUTTON */
-.main-btn{
-background:#2563eb;
-color:white;
-border:none;
-padding:12px;
-border-radius:6px;
-cursor:pointer;
+button.main{
+background:#2563eb;color:white;padding:10px;
+border:none;border-radius:8px;margin-top:10px;cursor:pointer;
 }
 
-.main-btn:hover{
-background:#1d4ed8;
-}
-
-/* TABLE */
 table{
-width:100%;
-border-collapse:collapse;
-margin-top:10px;
+width:100%;border-collapse:collapse;margin-top:10px;
 }
 
 td,th{
-padding:12px;
-border-bottom:1px solid #ddd;
+padding:10px;border-bottom:1px solid #ddd;
 }
 
-/* STATUS */
-.spoed{
-background:red;
-color:white;
-border:none;
-padding:6px 10px;
-border-radius:6px;
-cursor:pointer;
-}
-
-.normaal{
-background:#10b981;
-color:white;
-border:none;
-padding:6px 10px;
-border-radius:6px;
-cursor:pointer;
-}
-
-/* DELETE */
-.delete{
-background:#ef4444;
-color:white;
-border:none;
-padding:6px 10px;
-border-radius:6px;
-cursor:pointer;
-}
+.section{display:none;}
+.active{display:block;}
 </style>
 
 </head>
 
 <body>
 
-<header>🏥 Ziekenhuis Management Systeem</header>
+<header>
+<h2>🏥 Ziekenhuis Systeem</h2>
+<span>PRO Dashboard</span>
+</header>
 
 <div class="container">
 
 <div class="sidebar">
-<h2>Menu</h2>
-
-<button onclick="show('dash')">Dashboard</button>
+<button onclick="show('dashboard')">Dashboard</button>
 <button onclick="show('add')">Nieuwe patiënt</button>
-<button onclick="show('list')">Patiënten</button>
-<button onclick="show('afspraak')">Afspraken</button>
+<button onclick="show('patients')">Patiënten</button>
+<button onclick="show('rooms')">Kamers</button>
+<button onclick="show('appointments')">Afspraken</button>
 </div>
 
 <div class="content">
 
 <!-- DASHBOARD -->
-<div id="dash" class="card">
-<h2>📊 Overzicht</h2>
-<p><b>Totaal patiënten:</b> <span id="count">0</span></p>
-<p><b>Spoedgevallen:</b> <span id="spoed">0</span></p>
+<div id="dashboard" class="section active">
+<div class="grid">
+<div class="card">
+<h3>Patiënten</h3>
+<h1 id="count">0</h1>
+</div>
+
+<div class="card">
+<h3>Spoed</h3>
+<h1 id="spoed">0</h1>
+</div>
+
+<div class="card">
+<h3>Vrije kamers</h3>
+<h1 id="freeRooms">0</h1>
+</div>
+</div>
 </div>
 
 <!-- ADD -->
-<div id="add" class="card" style="display:none;">
-<h2>➕ Nieuwe patiënt</h2>
+<div id="add" class="section">
+<div class="card">
+<h2>Nieuwe patiënt</h2>
 
 <input id="naam" placeholder="Naam">
 <input id="leeftijd" placeholder="Leeftijd">
@@ -170,19 +116,30 @@ cursor:pointer;
 <input id="medicatie" placeholder="Medicatie">
 <input id="verzekering" placeholder="Verzekering">
 
-<button class="main-btn" onclick="add()">Opslaan</button>
+<button class="main" onclick="addPatient()">Opslaan</button>
+</div>
 </div>
 
-<!-- LIST -->
-<div id="list" class="card" style="display:none;">
-<h2>👥 Patiënten</h2>
-
+<!-- PATIENTS -->
+<div id="patients" class="section">
+<div class="card">
+<h2>Patiënten</h2>
 <table id="table"></table>
 </div>
+</div>
 
-<!-- AFSPRAKEN -->
-<div id="afspraak" class="card" style="display:none;">
-<h2>📅 Afspraken</h2>
+<!-- ROOMS -->
+<div id="rooms" class="section">
+<div class="card">
+<h2>Kamers</h2>
+<div id="roomList"></div>
+</div>
+</div>
+
+<!-- APPOINTMENTS -->
+<div id="appointments" class="section">
+<div class="card">
+<h2>Afspraken</h2>
 
 <input id="aNaam" placeholder="Naam">
 <input id="aDatum" placeholder="Datum">
@@ -193,9 +150,10 @@ cursor:pointer;
 <option>Spoed</option>
 </select>
 
-<button class="main-btn" onclick="addAfspraak()">Toevoegen</button>
+<button class="main" onclick="addAppointment()">Toevoegen</button>
 
-<ul id="lijst"></ul>
+<ul id="aList"></ul>
+</div>
 </div>
 
 </div>
@@ -203,40 +161,46 @@ cursor:pointer;
 
 <script>
 
+/* DATA */
 let patients = [];
+let rooms = [
+{nr:101, bezet:false},
+{nr:102, bezet:false},
+{nr:103, bezet:false},
+{nr:104, bezet:false}
+];
 let afspraken = [];
 
 /* NAV */
 function show(id){
-document.querySelectorAll(".card").forEach(c=>c.style.display="none");
-document.getElementById(id).style.display="block";
+document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+document.getElementById(id).classList.add("active");
 render();
-renderAfspraak();
 }
 
 /* ADD PATIENT */
-function add(){
-
-let naam = document.getElementById("naam").value;
-
-if(!naam){
-alert("Naam verplicht!");
-return;
-}
+function addPatient(){
 
 let p = {
-naam,
+naam: v("naam"),
 leeftijd: v("leeftijd"),
 aandoening: v("aandoening"),
 medicatie: v("medicatie"),
 verzekering: v("verzekering"),
-spoed:false
+spoed:false,
+kamer:null,
+notities:[]
 };
 
 patients.push(p);
 render();
+alert("Opgeslagen!");
+}
 
-alert("Patiënt opgeslagen!");
+/* SPOED */
+function toggleSpoed(i){
+patients[i].spoed = !patients[i].spoed;
+render();
 }
 
 /* DELETE */
@@ -245,23 +209,50 @@ patients.splice(i,1);
 render();
 }
 
-/* SPOED */
-function toggle(i){
-patients[i].spoed = !patients[i].spoed;
+/* ROOM ASSIGN */
+function giveRoom(i){
+
+let free = rooms.find(r=>!r.bezet);
+
+if(!free){
+alert("Geen kamers vrij!");
+return;
+}
+
+free.bezet = true;
+patients[i].kamer = free.nr;
 render();
+}
+
+/* ROOM FREE */
+function freeRoom(i){
+
+let nr = patients[i].kamer;
+let room = rooms.find(r=>r.nr==nr);
+
+if(room) room.bezet = false;
+
+patients[i].kamer = null;
+render();
+}
+
+/* NOTE */
+function note(i){
+let n = prompt("Notitie:");
+if(n) patients[i].notities.push(n);
 }
 
 /* RENDER */
 function render(){
 
+/* TABLE */
 let table = document.getElementById("table");
-if(!table) return;
 
+if(table){
 table.innerHTML = `
 <tr>
 <th>Naam</th><th>Leeftijd</th><th>Aandoening</th>
-<th>Medicatie</th><th>Verzekering</th>
-<th>Status</th><th>Acties</th>
+<th>Kamer</th><th>Status</th><th>Acties</th>
 </tr>
 `;
 
@@ -274,30 +265,38 @@ let r = table.insertRow();
 r.insertCell(0).innerText=p.naam;
 r.insertCell(1).innerText=p.leeftijd;
 r.insertCell(2).innerText=p.aandoening;
-r.insertCell(3).innerText=p.medicatie;
-r.insertCell(4).innerText=p.verzekering;
+r.insertCell(3).innerText=p.kamer || "Geen";
 
-let statusBtn = document.createElement("button");
+let btn = document.createElement("button");
+btn.innerText = p.spoed ? "🚨 SPOED":"Normaal";
+btn.onclick=()=>toggleSpoed(i);
 
-if(p.spoed){
-statusBtn.className="spoed";
-statusBtn.innerText="SPOED";
-spoed++;
-}else{
-statusBtn.className="normaal";
-statusBtn.innerText="Normaal";
-}
+if(p.spoed) spoed++;
 
-statusBtn.onclick = ()=>toggle(i);
+r.insertCell(4).appendChild(btn);
 
-r.insertCell(5).appendChild(statusBtn);
+let acties = document.createElement("div");
 
+/* kamer */
+let roomBtn = document.createElement("button");
+roomBtn.innerText = p.kamer ? "Vrijmaken":"Kamer";
+roomBtn.onclick=()=>p.kamer?freeRoom(i):giveRoom(i);
+
+/* note */
+let noteBtn = document.createElement("button");
+noteBtn.innerText="📝";
+noteBtn.onclick=()=>note(i);
+
+/* delete */
 let delBtn = document.createElement("button");
-delBtn.className="delete";
-delBtn.innerText="Verwijder";
+delBtn.innerText="❌";
 delBtn.onclick=()=>del(i);
 
-r.insertCell(6).appendChild(delBtn);
+acties.appendChild(roomBtn);
+acties.appendChild(noteBtn);
+acties.appendChild(delBtn);
+
+r.insertCell(5).appendChild(acties);
 
 });
 
@@ -305,37 +304,55 @@ document.getElementById("count").innerText = patients.length;
 document.getElementById("spoed").innerText = spoed;
 }
 
+/* ROOMS */
+let div = document.getElementById("roomList");
+
+if(div){
+div.innerHTML="";
+let free = 0;
+
+rooms.forEach(r=>{
+let box = document.createElement("div");
+box.innerText = "Kamer "+r.nr+" - "+(r.bezet?"Bezet":"Vrij");
+box.style.padding="10px";
+box.style.margin="5px";
+box.style.borderRadius="8px";
+box.style.background = r.bezet?"#fecaca":"#bbf7d0";
+
+if(!r.bezet) free++;
+
+div.appendChild(box);
+});
+
+document.getElementById("freeRooms").innerText = free;
+}
+
 /* AFSPRAKEN */
-function addAfspraak(){
+let ul = document.getElementById("aList");
+
+if(ul){
+ul.innerHTML="";
+afspraken.forEach(a=>{
+let li = document.createElement("li");
+li.innerText = a.datum+" - "+a.naam+" ("+a.type+")";
+if(a.type==="Spoed") li.style.color="red";
+ul.appendChild(li);
+});
+}
+
+}
+
+/* ADD AFSPRAAK */
+function addAppointment(){
 
 let a = {
-naam: v("aNaam"),
-datum: v("aDatum"),
-type: document.getElementById("aType").value
+naam:v("aNaam"),
+datum:v("aDatum"),
+type:document.getElementById("aType").value
 };
 
 afspraken.push(a);
-
-renderAfspraak();
-}
-
-/* RENDER AFSPRAKEN */
-function renderAfspraak(){
-
-let ul = document.getElementById("lijst");
-if(!ul) return;
-
-ul.innerHTML="";
-
-afspraken.forEach(a=>{
-let li = document.createElement("li");
-
-li.innerText = a.datum+" - "+a.naam+" ("+a.type+")";
-
-if(a.type==="Spoed") li.style.color="red";
-
-ul.appendChild(li);
-});
+render();
 }
 
 /* HELPER */
