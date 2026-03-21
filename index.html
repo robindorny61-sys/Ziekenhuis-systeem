@@ -2,45 +2,70 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<title>Het Ziekenhuissysteem</title>
+<title>Het Ziekenhuissysteem PRO MAX</title>
 
 <style>
-body{margin:0;font-family:Arial;background:#eef2f7;}
-header{background:#1e3a8a;color:white;padding:15px;font-size:20px;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI';}
+body{background:#eef2f7;color:#1e293b;}
+
+header{
+background:linear-gradient(90deg,#1e3a8a,#2563eb);
+color:white;padding:15px;font-size:20px;
+display:flex;justify-content:space-between;
+}
 
 .container{display:flex;}
 
 .sidebar{
-width:230px;background:#0f172a;color:white;height:100vh;padding:15px;
+width:240px;background:#0f172a;color:white;height:100vh;padding:15px;
 }
 
 .sidebar button{
-width:100%;padding:10px;margin:5px 0;
-background:#1e293b;color:white;border:none;cursor:pointer;
+width:100%;padding:12px;margin:6px 0;
+background:#1e293b;border:none;color:white;
+border-radius:8px;cursor:pointer;
 }
+
+.sidebar button:hover{background:#2563eb;}
 
 .content{flex:1;padding:20px;}
 
 .card{
-background:white;padding:15px;border-radius:10px;margin-bottom:15px;
+background:white;padding:15px;border-radius:12px;
+margin-bottom:20px;
+box-shadow:0 5px 15px rgba(0,0,0,0.05);
 }
 
-input{width:100%;padding:10px;margin:5px 0;}
+input,select{
+width:100%;padding:10px;margin:5px 0;
+border-radius:8px;border:1px solid #ccc;
+}
 
-button{padding:8px;margin:2px;}
+button{
+padding:8px;border:none;border-radius:6px;cursor:pointer;
+}
 
 .section{display:none;}
 .active{display:block;}
 
 #login{
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
+display:flex;justify-content:center;align-items:center;height:100vh;
 }
 
 .login-box{
-background:white;padding:20px;border-radius:10px;width:300px;
+background:white;padding:25px;border-radius:10px;width:320px;
+box-shadow:0 10px 30px rgba(0,0,0,0.1);
+}
+
+#modal{
+position:fixed;top:0;left:0;width:100%;height:100%;
+background:rgba(0,0,0,0.5);
+display:none;justify-content:center;align-items:center;
+}
+
+.modal-box{
+background:white;padding:20px;border-radius:10px;width:450px;
+max-height:80vh;overflow:auto;
 }
 </style>
 
@@ -61,14 +86,17 @@ background:white;padding:20px;border-radius:10px;width:300px;
 <!-- APP -->
 <div id="app" style="display:none;">
 
-<header>🏥 Het Ziekenhuissysteem</header>
+<header>
+🏥 Het Ziekenhuissysteem PRO MAX
+<button onclick="logout()">Logout</button>
+</header>
 
 <div class="container">
 
 <div class="sidebar">
 <button onclick="show('dashboard')">Dashboard</button>
-<button onclick="show('add')">Nieuwe patiënt</button>
 <button onclick="show('patients')">Patiënten</button>
+<button onclick="show('rooms')">Kamers</button>
 <button onclick="show('checks')">Dagelijkse checks</button>
 </div>
 
@@ -78,24 +106,32 @@ background:white;padding:20px;border-radius:10px;width:300px;
 <div class="card">
 <h2>Dashboard</h2>
 <p>Patiënten: <span id="count"></span></p>
-</div>
-</div>
-
-<div id="add" class="section">
-<div class="card">
-<h2>Nieuwe patiënt</h2>
-<input id="naam" placeholder="Naam">
-<input id="leeftijd" placeholder="Leeftijd">
-<input id="aandoening" placeholder="Aandoening">
-<input id="datum" type="date">
-<button onclick="addPatient()">Opslaan</button>
+<p>Spoed: <span id="spoed"></span></p>
 </div>
 </div>
 
 <div id="patients" class="section">
 <div class="card">
 <h2>Patiënten</h2>
+
+<input id="search" placeholder="Zoek..." oninput="render()">
+
+<input id="naam" placeholder="Naam">
+<input id="leeftijd" placeholder="Leeftijd">
+<input id="aandoening" placeholder="Aandoening">
+<input id="datum" type="date">
+
+<button onclick="addPatient()">➕ Toevoegen</button>
+
 <div id="patientList"></div>
+</div>
+</div>
+
+<div id="rooms" class="section">
+<div class="card">
+<h2>Kamers</h2>
+<button onclick="addRoom()">➕ Kamer</button>
+<div id="roomList"></div>
 </div>
 </div>
 
@@ -107,36 +143,52 @@ background:white;padding:20px;border-radius:10px;width:300px;
 <input id="checkText" placeholder="Controle">
 <button onclick="addCheck()">Opslaan</button>
 
-<h3>Overzicht per dag</h3>
 <div id="checkList"></div>
 </div>
 </div>
 
 </div>
 </div>
+
+</div>
+
+<!-- MODAL -->
+<div id="modal">
+<div class="modal-box">
+<div id="detail"></div>
+<button onclick="closeModal()">Sluiten</button>
+</div>
 </div>
 
 <script>
 
 /* LOGIN */
-function login(){
-let u=document.getElementById("user").value;
-let p=document.getElementById("pass").value;
-
-if((u=="admin"||u=="dokter") && p=="1234"){
+if(localStorage.getItem("loggedIn")){
 document.getElementById("login").style.display="none";
 document.getElementById("app").style.display="block";
-}else{
-alert("Fout!");
 }
+
+function login(){
+let u=user.value,p=pass.value;
+if((u=="admin"||u=="dokter")&&p=="1234"){
+localStorage.setItem("loggedIn",true);
+location.reload();
+}else alert("Fout!");
+}
+
+function logout(){
+localStorage.removeItem("loggedIn");
+location.reload();
 }
 
 /* DATA */
-let patients = JSON.parse(localStorage.getItem("patients")) || [];
+let patients=JSON.parse(localStorage.getItem("patients"))||[];
+let rooms=JSON.parse(localStorage.getItem("rooms"))||[];
 
 /* SAVE */
 function save(){
-localStorage.setItem("patients", JSON.stringify(patients));
+localStorage.setItem("patients",JSON.stringify(patients));
+localStorage.setItem("rooms",JSON.stringify(rooms));
 }
 
 /* NAV */
@@ -146,34 +198,46 @@ document.getElementById(id).classList.add("active");
 render();
 }
 
-/* ADD PATIENT */
+/* PATIENT */
 function addPatient(){
 patients.push({
-naam:v("naam"),
-leeftijd:v("leeftijd"),
-aandoening:v("aandoening"),
-datum:v("datum"),
+naam:naam.value,
+leeftijd:leeftijd.value,
+aandoening:aandoening.value,
+datum:datum.value,
+spoed:false,
+kamer:null,
+medicatie:[],
 checks:[]
 });
-save();
-render();
+save();render();
 }
 
 /* RENDER */
 function render(){
 
-/* PATIENT LIST */
+/* FILTER */
+let q=search?search.value.toLowerCase():"";
+
+/* LIST */
 let list=document.getElementById("patientList");
 if(list){
 list.innerHTML="";
-patients.forEach((p,i)=>{
+
+patients.filter(p=>p.naam.toLowerCase().includes(q))
+.forEach((p,i)=>{
+
 let div=document.createElement("div");
+
 div.innerHTML=`
-<b>${p.naam}</b><br>
-Leeftijd: ${p.leeftijd}<br>
+<b>${p.naam}</b> (${p.leeftijd})<br>
+${p.aandoening}<br>
 Opname: ${p.datum}<br>
+<button onclick="openDetail(${i})">👁️</button>
+<button onclick="del(${i})">❌</button>
 <hr>
 `;
+
 list.appendChild(div);
 });
 }
@@ -184,46 +248,106 @@ if(sel){
 sel.innerHTML="";
 patients.forEach((p,i)=>{
 let o=document.createElement("option");
-o.value=i;
-o.innerText=p.naam;
+o.value=i;o.innerText=p.naam;
 sel.appendChild(o);
 });
 }
 
-/* CHECK LIST */
+/* CHECKS */
 let cl=document.getElementById("checkList");
 if(cl){
 cl.innerHTML="";
 patients.forEach(p=>{
 p.checks.forEach(c=>{
-let div=document.createElement("div");
-div.innerText = c.datum+" - "+p.naam+": "+c.text;
-cl.appendChild(div);
+let d=document.createElement("div");
+d.innerText=c.datum+" - "+p.naam+": "+c.text;
+cl.appendChild(d);
 });
 });
 }
 
-/* COUNT */
-document.getElementById("count").innerText=patients.length;
+/* ROOMS */
+let rl=document.getElementById("roomList");
+if(rl){
+rl.innerHTML="";
+rooms.forEach((r,i)=>{
+let d=document.createElement("div");
+d.innerText=`Kamer ${r.nr} (${r.bezet}/${r.cap})`;
+
+let e=document.createElement("button");
+e.innerText="✏️";
+e.onclick=()=>{r.cap=prompt("cap",r.cap);save();render();};
+
+let x=document.createElement("button");
+x.innerText="❌";
+x.onclick=()=>{rooms.splice(i,1);save();render();};
+
+d.append(e,x);
+rl.appendChild(d);
+});
 }
 
-/* ADD CHECK */
+/* STATS */
+count.innerText=patients.length;
+spoed.innerText=patients.filter(p=>p.spoed).length;
+
+}
+
+/* DETAIL */
+function openDetail(i){
+let p=patients[i];
+
+detail.innerHTML=`
+<h3>${p.naam}</h3>
+Leeftijd: ${p.leeftijd}<br>
+Aandoening: ${p.aandoening}<br><br>
+
+<h4>Medicatie</h4>
+<button onclick="addMed(${i})">➕</button>
+${p.medicatie.join("<br>")}
+
+<h4>Checks</h4>
+<button onclick="addCheckDirect(${i})">➕</button>
+${p.checks.map(c=>c.datum+" "+c.text).join("<br>")}
+`;
+
+modal.style.display="flex";
+}
+
+function closeModal(){modal.style.display="none";}
+
+/* EXTRA */
+function addMed(i){
+let m=prompt("Medicatie");
+if(m){patients[i].medicatie.push(m);save();openDetail(i);}
+}
+
+function addCheckDirect(i){
+let t=prompt("Check");
+if(t){
+patients[i].checks.push({datum:new Date().toLocaleDateString(),text:t});
+save();openDetail(i);
+}
+}
+
+function del(i){patients.splice(i,1);save();render();}
+
+/* ROOM */
+function addRoom(){
+let nr=prompt("nr");
+let cap=prompt("cap");
+rooms.push({nr,cap:Number(cap),bezet:0});
+save();render();
+}
+
+/* CHECK */
 function addCheck(){
-
-let i=document.getElementById("patientSelect").value;
-
+let i=patientSelect.value;
 patients[i].checks.push({
 datum:new Date().toLocaleDateString(),
-text:v("checkText")
+text:checkText.value
 });
-
-save();
-render();
-}
-
-/* HELPER */
-function v(id){
-return document.getElementById(id).value;
+save();render();
 }
 
 render();
