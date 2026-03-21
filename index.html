@@ -175,8 +175,10 @@ let p=document.getElementById("pass").value;
 
 if((u=="admin"||u=="dokter") && p=="1234"){
 localStorage.setItem("login",true);
+
 document.getElementById("login").style.display="none";
 document.getElementById("app").style.display="block";
+
 }else{
 alert("Foute login");
 }
@@ -214,7 +216,8 @@ datum:document.getElementById("datum").value,
 medicatie:[],
 checks:[]
 });
-save();render();
+save();
+render();
 }
 
 /* RENDER */
@@ -225,6 +228,7 @@ let q=searchInput?searchInput.value.toLowerCase():"";
 
 /* PATIENT LIST */
 let list=document.getElementById("patientList");
+if(list){
 list.innerHTML="";
 
 patients
@@ -248,18 +252,22 @@ ${x.p.aandoening}<br>
 list.appendChild(div);
 
 });
+}
 
 /* SELECT */
 let sel=document.getElementById("patientSelect");
+if(sel){
 sel.innerHTML="";
 patients.forEach((p,i)=>{
 let o=document.createElement("option");
 o.value=i;o.innerText=p.naam;
 sel.appendChild(o);
 });
+}
 
 /* CHECKS */
 let cl=document.getElementById("checkList");
+if(cl){
 cl.innerHTML="";
 patients.forEach(p=>{
 p.checks.forEach(c=>{
@@ -268,9 +276,11 @@ d.innerText=c.datum+" - "+p.naam+": "+c.text;
 cl.appendChild(d);
 });
 });
+}
 
 /* ROOMS */
 let rl=document.getElementById("roomList");
+if(rl){
 rl.innerHTML="";
 rooms.forEach((r,i)=>{
 
@@ -285,6 +295,7 @@ Kamer ${r.nr} (${r.bezet}/${r.cap})
 rl.appendChild(d);
 
 });
+}
 
 /* COUNT */
 document.getElementById("count").innerText=patients.length;
@@ -369,7 +380,8 @@ patients[i].checks.push({
 datum:new Date().toLocaleDateString(),
 text:document.getElementById("checkText").value
 });
-save();render();
+save();
+render();
 }
 
 /* ROOM */
@@ -377,7 +389,8 @@ function addRoom(){
 let nr=prompt("Kamer nummer");
 let cap=prompt("Capaciteit");
 rooms.push({nr,cap:Number(cap),bezet:0});
-save();render();
+save();
+render();
 }
 
 function deleteRoom(i){
@@ -398,4 +411,10 @@ render();
 }
 }
 
-render
+/* START */
+render();
+
+</script>
+
+</body>
+</html>
