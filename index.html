@@ -37,6 +37,7 @@ border-radius:8px;border:none;
 
 button{
 padding:8px;border:none;border-radius:6px;background:#3b82f6;color:white;
+cursor:pointer;
 }
 
 .section{display:none;}
@@ -162,22 +163,20 @@ background:#020617;padding:20px;border-radius:10px;width:400px;
 
 <script>
 
-/* LOGIN FIXED */
+/* LOGIN */
 if(localStorage.getItem("login")){
 document.getElementById("login").style.display="none";
 document.getElementById("app").style.display="block";
 }
 
 function login(){
-let u = document.getElementById("user").value;
-let p = document.getElementById("pass").value;
+let u=document.getElementById("user").value;
+let p=document.getElementById("pass").value;
 
 if((u=="admin"||u=="dokter") && p=="1234"){
-localStorage.setItem("login", true);
-
+localStorage.setItem("login",true);
 document.getElementById("login").style.display="none";
 document.getElementById("app").style.display="block";
-
 }else{
 alert("Foute login");
 }
@@ -224,9 +223,8 @@ function render(){
 let searchInput=document.getElementById("search");
 let q=searchInput?searchInput.value.toLowerCase():"";
 
-/* LIST */
+/* PATIENT LIST */
 let list=document.getElementById("patientList");
-if(list){
 list.innerHTML="";
 
 patients
@@ -239,29 +237,29 @@ let div=document.createElement("div");
 div.innerHTML=`
 <b>${x.p.naam}</b> (${x.p.leeftijd})<br>
 ${x.p.aandoening}<br>
+
 <button onclick="openDetail(${x.i})">👁️</button>
+<button onclick="editPatient(${x.i})">✏️</button>
+<button onclick="deletePatient(${x.i})">❌</button>
+
 <hr>
 `;
 
 list.appendChild(div);
 
 });
-}
 
 /* SELECT */
 let sel=document.getElementById("patientSelect");
-if(sel){
 sel.innerHTML="";
 patients.forEach((p,i)=>{
 let o=document.createElement("option");
 o.value=i;o.innerText=p.naam;
 sel.appendChild(o);
 });
-}
 
 /* CHECKS */
 let cl=document.getElementById("checkList");
-if(cl){
 cl.innerHTML="";
 patients.forEach(p=>{
 p.checks.forEach(c=>{
@@ -270,18 +268,23 @@ d.innerText=c.datum+" - "+p.naam+": "+c.text;
 cl.appendChild(d);
 });
 });
-}
 
 /* ROOMS */
 let rl=document.getElementById("roomList");
-if(rl){
 rl.innerHTML="";
 rooms.forEach((r,i)=>{
+
 let d=document.createElement("div");
-d.innerText=`Kamer ${r.nr} (${r.bezet}/${r.cap})`;
+
+d.innerHTML=`
+Kamer ${r.nr} (${r.bezet}/${r.cap})
+<button onclick="editRoom(${i})">✏️</button>
+<button onclick="deleteRoom(${i})">❌</button>
+`;
+
 rl.appendChild(d);
+
 });
-}
 
 /* COUNT */
 document.getElementById("count").innerText=patients.length;
@@ -312,6 +315,31 @@ function closeModal(){
 document.getElementById("modal").style.display="none";
 }
 
+/* PATIENT ACTIONS */
+function deletePatient(i){
+if(confirm("Verwijderen?")){
+patients.splice(i,1);
+save();
+render();
+}
+}
+
+function editPatient(i){
+let p=patients[i];
+
+let naam=prompt("Naam",p.naam);
+let leeftijd=prompt("Leeftijd",p.leeftijd);
+let aandoening=prompt("Aandoening",p.aandoening);
+
+if(naam){
+p.naam=naam;
+p.leeftijd=leeftijd;
+p.aandoening=aandoening;
+save();
+render();
+}
+}
+
 /* EXTRA */
 function addMed(i){
 let m=prompt("Medicatie");
@@ -334,6 +362,7 @@ openDetail(i);
 }
 }
 
+/* CHECK */
 function addCheck(){
 let i=document.getElementById("patientSelect").value;
 patients[i].checks.push({
@@ -343,16 +372,30 @@ text:document.getElementById("checkText").value
 save();render();
 }
 
+/* ROOM */
 function addRoom(){
-let nr=prompt("nr");
-let cap=prompt("cap");
+let nr=prompt("Kamer nummer");
+let cap=prompt("Capaciteit");
 rooms.push({nr,cap:Number(cap),bezet:0});
 save();render();
 }
 
+function deleteRoom(i){
+if(confirm("Verwijderen?")){
+rooms.splice(i,1);
+save();
 render();
+}
+}
 
-</script>
+function editRoom(i){
+let r=rooms[i];
+let cap=prompt("Nieuwe capaciteit",r.cap);
+if(cap){
+r.cap=Number(cap);
+save();
+render();
+}
+}
 
-</body>
-</html>
+render
