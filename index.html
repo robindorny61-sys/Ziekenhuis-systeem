@@ -2,58 +2,93 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<title>Ziekenhuis Systeem ULTRA</title>
+<title>Ziekenhuis ULTRA 19</title>
 
 <style>
-body{font-family:Arial;margin:0;background:#eef2f7;}
-header{background:#1e293b;color:white;padding:15px;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI;}
+body{background:#eef2f7;}
+
+header{
+background:#1e3a8a;color:white;padding:15px;font-size:20px;
+}
+
 .container{display:flex;}
-.sidebar{width:230px;background:#0f172a;color:white;height:100vh;padding:15px;}
-.sidebar button{width:100%;padding:10px;margin:5px 0;background:#1e293b;color:white;border:none;cursor:pointer;}
+
+.sidebar{
+width:240px;background:#0f172a;color:white;height:100vh;padding:15px;
+}
+
+.sidebar button{
+width:100%;padding:12px;margin:5px 0;
+background:#1e293b;border:none;color:white;
+border-radius:8px;cursor:pointer;
+}
+
 .sidebar button:hover{background:#2563eb;}
+
 .content{flex:1;padding:20px;}
-.card{background:white;padding:15px;border-radius:10px;margin-bottom:20px;}
-input,select{width:100%;padding:10px;margin:5px 0;}
-button{padding:8px;margin:2px;cursor:pointer;}
+
+.card{
+background:white;padding:15px;border-radius:10px;
+margin-bottom:20px;
+box-shadow:0 5px 15px rgba(0,0,0,0.05);
+}
+
+input{
+width:100%;padding:10px;margin:5px 0;
+border-radius:8px;border:1px solid #ccc;
+}
+
+button{padding:8px;border:none;border-radius:6px;cursor:pointer;}
+
 table{width:100%;border-collapse:collapse;}
-td,th{padding:10px;border-bottom:1px solid #ccc;}
+td,th{padding:10px;border-bottom:1px solid #ddd;}
+
 .section{display:none;}
 .active{display:block;}
+
+#modal{
+position:fixed;top:0;left:0;width:100%;height:100%;
+background:rgba(0,0,0,0.5);display:none;
+justify-content:center;align-items:center;
+}
+
+.modal-content{
+background:white;padding:20px;border-radius:10px;width:400px;
+}
 </style>
 
 </head>
 
 <body>
 
-<header>🏥 Ziekenhuis Systeem</header>
+<header>🏥 ULTRA 19 Ziekenhuis</header>
 
 <div class="container">
 
 <div class="sidebar">
 <button onclick="show('dashboard')">Dashboard</button>
-<button onclick="show('addPatient')">Nieuwe patiënt</button>
+<button onclick="show('add')">Nieuwe patiënt</button>
 <button onclick="show('patients')">Patiënten</button>
 <button onclick="show('rooms')">Kamers</button>
-<button onclick="show('appointments')">Afspraken</button>
 </div>
 
 <div class="content">
 
 <div id="dashboard" class="section active">
 <div class="card">
-<h2>Dashboard</h2>
-<p>Patiënten: <span id="count">0</span></p>
-<p>Spoed: <span id="spoed">0</span></p>
+<h2>Stats</h2>
+<p>Patiënten: <span id="count"></span></p>
+<p>Spoed: <span id="spoed"></span></p>
 </div>
 </div>
 
-<div id="addPatient" class="section">
+<div id="add" class="section">
 <div class="card">
 <h2>Nieuwe patiënt</h2>
 <input id="naam" placeholder="Naam">
 <input id="leeftijd" placeholder="Leeftijd">
 <input id="aandoening" placeholder="Aandoening">
-<input id="verzekering" placeholder="Verzekering">
 <button onclick="addPatient()">Opslaan</button>
 </div>
 </div>
@@ -61,6 +96,7 @@ td,th{padding:10px;border-bottom:1px solid #ccc;}
 <div id="patients" class="section">
 <div class="card">
 <h2>Patiënten</h2>
+<input id="search" placeholder="Zoeken..." oninput="render()">
 <table id="table"></table>
 </div>
 </div>
@@ -68,34 +104,34 @@ td,th{padding:10px;border-bottom:1px solid #ccc;}
 <div id="rooms" class="section">
 <div class="card">
 <h2>Kamers</h2>
-<button onclick="addRoom()">➕ Kamer toevoegen</button>
+<button onclick="addRoom()">➕ Kamer</button>
 <div id="roomList"></div>
 </div>
 </div>
 
-<div id="appointments" class="section">
-<div class="card">
-<h2>Afspraken</h2>
-<input id="aNaam" placeholder="Naam">
-<input id="aDatum" placeholder="Datum">
-<select id="aType">
-<option>Normaal</option>
-<option>Spoed</option>
-</select>
-<button onclick="addAppointment()">Toevoegen</button>
-<ul id="aList"></ul>
 </div>
 </div>
 
+<!-- MODAL -->
+<div id="modal">
+<div class="modal-content">
+<h3>Patient detail</h3>
+<div id="detail"></div>
+<button onclick="closeModal()">Sluiten</button>
 </div>
 </div>
 
 <script>
 
 /* DATA */
-let patients = [];
-let rooms = [];
-let afspraken = [];
+let patients = JSON.parse(localStorage.getItem("patients"))||[];
+let rooms = JSON.parse(localStorage.getItem("rooms"))||[];
+
+/* SAVE */
+function save(){
+localStorage.setItem("patients",JSON.stringify(patients));
+localStorage.setItem("rooms",JSON.stringify(rooms));
+}
 
 /* NAV */
 function show(id){
@@ -104,98 +140,41 @@ document.getElementById(id).classList.add("active");
 render();
 }
 
-/* PATIENT */
+/* ADD PATIENT */
 function addPatient(){
 patients.push({
 naam:v("naam"),
 leeftijd:v("leeftijd"),
 aandoening:v("aandoening"),
-verzekering:v("verzekering"),
 spoed:false,
 kamer:null,
 dagboek:[],
 medicatie:[]
 });
-render();
-}
-
-function toggleSpoed(i){
-patients[i].spoed=!patients[i].spoed;
-render();
-}
-
-function delPatient(i){
-patients.splice(i,1);
-render();
-}
-
-function addDagboek(i){
-let t=prompt("Dagboek:");
-if(t) patients[i].dagboek.push(t);
-}
-
-function addMedicatie(i){
-let t=prompt("Medicatie:");
-if(t) patients[i].medicatie.push(t);
-}
-
-/* ROOMS */
-function addRoom(){
-let nr=prompt("Kamer nr:");
-let cap=prompt("Capaciteit:");
-rooms.push({nr,cap:Number(cap),bezet:0});
-render();
-}
-
-function editRoom(i){
-let cap=prompt("Nieuwe cap:",rooms[i].cap);
-rooms[i].cap=Number(cap);
-render();
-}
-
-function delRoom(i){
-rooms.splice(i,1);
-render();
-}
-
-function giveRoom(i){
-let r=rooms.find(x=>x.bezet<x.cap);
-if(!r) return alert("Geen plaats");
-r.bezet++;
-patients[i].kamer=r.nr;
-render();
-}
-
-function freeRoom(i){
-let r=rooms.find(x=>x.nr==patients[i].kamer);
-if(r) r.bezet--;
-patients[i].kamer=null;
-render();
-}
-
-/* AFSPRAKEN */
-function addAppointment(){
-afspraken.push({
-naam:v("aNaam"),
-datum:v("aDatum"),
-type:document.getElementById("aType").value
-});
+save();
 render();
 }
 
 /* RENDER */
 function render(){
 
-/* PATIENT TABLE */
 let t=document.getElementById("table");
+
 if(t){
+
+let q=document.getElementById("search").value.toLowerCase();
+
 t.innerHTML=`<tr>
 <th>Naam</th><th>Leeftijd</th><th>Kamer</th>
-<th>Status</th><th>Acties</th></tr>`;
+<th>Status</th><th>Acties</th>
+</tr>`;
 
 let spoed=0;
 
-patients.forEach((p,i)=>{
+patients
+.filter(p=>p.naam.toLowerCase().includes(q))
+.forEach((p,i)=>{
+
 let r=t.insertRow();
 
 r.insertCell(0).innerText=p.naam;
@@ -204,31 +183,28 @@ r.insertCell(2).innerText=p.kamer||"Geen";
 
 let s=document.createElement("button");
 s.innerText=p.spoed?"🚨":"OK";
-s.onclick=()=>toggleSpoed(i);
+s.onclick=()=>{p.spoed=!p.spoed;save();render();};
+
 if(p.spoed) spoed++;
 
 r.insertCell(3).appendChild(s);
 
 let d=document.createElement("div");
 
-let room=document.createElement("button");
-room.innerText=p.kamer?"Vrij":"Kamer";
-room.onclick=()=>p.kamer?freeRoom(i):giveRoom(i);
+/* detail */
+let view=document.createElement("button");
+view.innerText="👁️";
+view.onclick=()=>openModal(i);
 
-let dag=document.createElement("button");
-dag.innerText="📖";
-dag.onclick=()=>addDagboek(i);
-
-let med=document.createElement("button");
-med.innerText="💊";
-med.onclick=()=>addMedicatie(i);
-
+/* delete */
 let del=document.createElement("button");
 del.innerText="❌";
-del.onclick=()=>delPatient(i);
+del.onclick=()=>{patients.splice(i,1);save();render();};
 
-d.append(room,dag,med,del);
+d.append(view,del);
+
 r.insertCell(4).appendChild(d);
+
 });
 
 document.getElementById("count").innerText=patients.length;
@@ -237,42 +213,88 @@ document.getElementById("spoed").innerText=spoed;
 
 /* ROOMS */
 let rl=document.getElementById("roomList");
+
 if(rl){
 rl.innerHTML="";
 rooms.forEach((r,i)=>{
 let div=document.createElement("div");
-div.innerHTML=`Kamer ${r.nr} (${r.bezet}/${r.cap})`;
-div.style.background=r.bezet>=r.cap?"#fca5a5":"#86efac";
+div.innerText=`Kamer ${r.nr} (${r.bezet}/${r.cap})`;
 
 let e=document.createElement("button");
 e.innerText="✏️";
-e.onclick=()=>editRoom(i);
+e.onclick=()=>{r.cap=prompt("cap:",r.cap);save();render();};
 
 let d=document.createElement("button");
 d.innerText="❌";
-d.onclick=()=>delRoom(i);
+d.onclick=()=>{rooms.splice(i,1);save();render();};
 
 div.append(e,d);
 rl.appendChild(div);
 });
 }
 
-/* AFSPRAKEN */
-let ul=document.getElementById("aList");
-if(ul){
-ul.innerHTML="";
-afspraken.forEach(a=>{
-let li=document.createElement("li");
-li.innerText=a.datum+" "+a.naam+" ("+a.type+")";
-if(a.type==="Spoed") li.style.color="red";
-ul.appendChild(li);
-});
 }
 
+/* ROOM ADD */
+function addRoom(){
+let nr=prompt("nr");
+let cap=prompt("cap");
+rooms.push({nr,cap:Number(cap),bezet:0});
+save();
+render();
 }
 
-/* HELPER */
-function v(id){return document.getElementById(id).value;}
+/* MODAL */
+function openModal(i){
+
+let p=patients[i];
+
+let html=`
+<b>${p.naam}</b><br>
+Leeftijd: ${p.leeftijd}<br>
+Aandoening: ${p.aandoening}<br><br>
+
+Dagboek:<br>
+<button onclick="addDagboek(${i})">➕</button>
+${p.dagboek.join("<br>")}<br><br>
+
+Medicatie:<br>
+<button onclick="addMedicatie(${i})">➕</button>
+${p.medicatie.join("<br>")}
+`;
+
+document.getElementById("detail").innerHTML=html;
+document.getElementById("modal").style.display="flex";
+}
+
+function closeModal(){
+document.getElementById("modal").style.display="none";
+}
+
+/* EXTRA */
+function addDagboek(i){
+let t=prompt("Dagboek");
+if(t){
+patients[i].dagboek.push(new Date().toLocaleDateString()+" - "+t);
+save();
+openModal(i);
+}
+}
+
+function addMedicatie(i){
+let t=prompt("Medicatie");
+if(t){
+patients[i].medicatie.push(t);
+save();
+openModal(i);
+}
+}
+
+function v(id){
+return document.getElementById(id).value;
+}
+
+render();
 
 </script>
 
