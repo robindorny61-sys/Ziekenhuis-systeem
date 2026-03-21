@@ -3,22 +3,23 @@
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:'Segoe UI', Arial;
+font-family:'Inter', 'Segoe UI', sans-serif;
 }
 
 body{
-background:#f1f5f9;
-color:#1e293b;
+background:linear-gradient(135deg,#0f172a,#1e293b);
+color:#e2e8f0;
 }
 
 /* HEADER */
 header{
-background:linear-gradient(90deg,#1e3a8a,#2563eb);
-color:white;
-padding:18px 25px;
-font-size:20px;
-font-weight:600;
-box-shadow:0 2px 10px rgba(0,0,0,0.1);
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(10px);
+padding:15px 25px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-bottom:1px solid rgba(255,255,255,0.1);
 }
 
 /* LAYOUT */
@@ -28,28 +29,30 @@ display:flex;
 
 /* SIDEBAR */
 .sidebar{
-width:240px;
-background:#0f172a;
+width:250px;
+background:rgba(255,255,255,0.03);
+backdrop-filter:blur(15px);
 height:100vh;
 padding:20px;
-box-shadow:2px 0 10px rgba(0,0,0,0.1);
+border-right:1px solid rgba(255,255,255,0.1);
 }
 
 .sidebar button{
 width:100%;
 padding:12px;
 margin-bottom:10px;
-background:#1e293b;
 border:none;
-color:#e2e8f0;
+border-radius:12px;
+background:transparent;
+color:#cbd5f5;
 cursor:pointer;
-border-radius:10px;
-transition:all 0.2s ease;
-font-weight:500;
+transition:0.2s;
+text-align:left;
 }
 
 .sidebar button:hover{
-background:#2563eb;
+background:rgba(59,130,246,0.2);
+color:white;
 transform:translateX(5px);
 }
 
@@ -59,127 +62,83 @@ flex:1;
 padding:25px;
 }
 
-/* CARD */
+/* CARDS */
 .card{
-background:white;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(20px);
 padding:20px;
-border-radius:15px;
-box-shadow:0 10px 25px rgba(0,0,0,0.05);
+border-radius:20px;
 margin-bottom:20px;
+border:1px solid rgba(255,255,255,0.1);
 transition:0.2s;
 }
 
 .card:hover{
-transform:translateY(-3px);
+transform:translateY(-5px);
+box-shadow:0 20px 40px rgba(0,0,0,0.3);
 }
 
-/* TITELS */
-h2{
-margin-bottom:10px;
-}
-
-/* INPUTS */
-input, select{
+/* INPUT */
+input,select{
 width:100%;
 padding:12px;
-margin-top:10px;
-border:1px solid #cbd5f5;
-border-radius:10px;
+margin:8px 0;
+border-radius:12px;
+border:none;
+background:rgba(255,255,255,0.08);
+color:white;
 outline:none;
-transition:0.2s;
 }
 
-input:focus, select:focus{
-border-color:#2563eb;
-box-shadow:0 0 5px rgba(37,99,235,0.3);
-}
-
-/* BUTTONS */
+/* BUTTON */
 button{
 padding:10px 12px;
 border:none;
-border-radius:8px;
+border-radius:10px;
 cursor:pointer;
-transition:0.2s;
-font-weight:500;
-}
-
-/* PRIMARY */
-button:not(.sidebar button){
-background:#2563eb;
+background:linear-gradient(135deg,#3b82f6,#6366f1);
 color:white;
+transition:0.2s;
 }
 
-button:not(.sidebar button):hover{
-background:#1d4ed8;
+button:hover{
+transform:scale(1.05);
 }
 
-/* ACTION BUTTONS */
-button:nth-child(1){background:#22c55e;}
-button:nth-child(1):hover{background:#16a34a;}
+/* PATIENT CARD */
+#patientList div{
+background:rgba(255,255,255,0.04);
+padding:15px;
+border-radius:15px;
+margin-top:10px;
+border:1px solid rgba(255,255,255,0.08);
+}
 
-button:nth-child(2){background:#f59e0b;}
-button:nth-child(2):hover{background:#d97706;}
+#patientList div:hover{
+background:rgba(59,130,246,0.15);
+}
 
-button:nth-child(3){background:#ef4444;}
-button:nth-child(3):hover{background:#dc2626;}
-
-/* TABLE */
-table{
+/* MODAL */
+#modal{
+position:fixed;
+top:0;
+left:0;
 width:100%;
-border-collapse:collapse;
-margin-top:15px;
-border-radius:10px;
-overflow:hidden;
-}
-
-th{
-background:#e2e8f0;
-text-align:left;
-padding:12px;
-font-weight:600;
-}
-
-td{
-padding:12px;
-border-bottom:1px solid #e5e7eb;
-}
-
-tr:hover{
-background:#f8fafc;
-}
-
-/* STATUS */
-button:contains("🚨"){
-background:#ef4444 !important;
-}
-
-/* ROOMS */
-#roomList div{
-padding:12px;
-margin:8px 0;
-border-radius:10px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-font-weight:500;
-}
-
-/* SECTION */
-.section{
+height:100%;
+background:rgba(0,0,0,0.7);
 display:none;
+justify-content:center;
+align-items:center;
 }
 
-.active{
-display:block;
+.modal-box{
+background:#020617;
+padding:25px;
+border-radius:20px;
+width:450px;
+border:1px solid rgba(255,255,255,0.1);
 }
 
-/* SCROLLBAR */
-::-webkit-scrollbar{
-width:8px;
-}
-
-::-webkit-scrollbar-thumb{
-background:#cbd5f5;
-border-radius:10px;
-}
+/* SECTIONS */
+.section{display:none;}
+.active{display:block;}
