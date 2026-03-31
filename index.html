@@ -175,6 +175,8 @@ let p=document.getElementById("pass").value;
 
 if((u=="admin"||u=="dokter") && p=="1234"){
 localStorage.setItem("login",true);
+  if((u=="Robin"||u=="hannah") && p=="dokterpraktijk in de house"){
+localStorage.setItem("login",true);
 
 document.getElementById("login").style.display="none";
 document.getElementById("app").style.display="block";
